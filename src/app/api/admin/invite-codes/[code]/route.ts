@@ -9,10 +9,11 @@ function isAdmin(req: NextRequest) {
 }
 
 // DELETE /api/admin/invite-codes/[code]
-export async function DELETE(req: NextRequest, { params }: { params: { code: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ code: string }> }) {
   if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const code = decodeURIComponent(params.code).toUpperCase();
+  const resolvedParams = await params;
+  const code = decodeURIComponent(resolvedParams.code).toUpperCase();
   await redis.srem(CODES_KEY, code);
 
   return NextResponse.json({ success: true });
