@@ -1,0 +1,8 @@
+{
+  "network": "baseSepolia",
+  "chainId": "84532",
+  "deployer": "0xDdb29d86Be44A19073CB52888d489103Ec4Ac7b9",
+  "FriendBet_v2": "0xa04e926D77bA0dCAC6D86C8a0Daf0F26A627c953",
+  "DailyGame_v2": "0x0817E53945c26032AFE6aa5CF61969DbE944d257",
+  "timestamp": "2026-06-06T12:13:56.918Z"
+}

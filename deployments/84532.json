@@ -1,0 +1,10 @@
+{
+  "network": "baseSepolia",
+  "chainId": "84532",
+  "deployer": "0xDdb29d86Be44A19073CB52888d489103Ec4Ac7b9",
+  "treasury": "0x225FF3AacD6328301a35614DC5f5AE173f595294",
+  "usdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "PredictionMarket": "0x738856039fC3Ab086FFA3Ab478cDebA21A130c4b",
+  "FriendBet": "0x0e5d37c771f3268838AdD8B9c8adE9e5C01a2B65",
+  "timestamp": "2026-06-05T20:49:44.413Z"
+}
