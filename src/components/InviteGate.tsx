@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useActiveAccount } from "thirdweb/react";
+import { usePathname } from "next/navigation";
 import { Key, ArrowRight, Loader2, CheckCircle2, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -30,6 +31,12 @@ function isWalletApprovedLocally(wallet: string) {
 export default function InviteGate({ children }: { children: React.ReactNode }) {
   const account = useActiveAccount();
   const wallet = account?.address;
+  const pathname = usePathname();
+
+  // Admin page bypasses the invite gate — it has its own wallet-based auth
+  if (pathname?.startsWith("/admin")) {
+    return <>{children}</>;
+  }
 
   const [status, setStatus] = useState<"loading" | "locked" | "unlocked">("loading");
   const [code, setCode] = useState("");
