@@ -150,81 +150,160 @@ function Hero() {
   const count = nextMarketId !== undefined ? Number(nextMarketId) : 0;
 
   return (
-    <section style={{ position: "relative", minHeight: "90vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 0 60px", overflow: "hidden" }}>
-      {/* Subtle single gradient blob — no animation */}
-      <div style={{ position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)", width: 800, height: 500, background: "radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%)", pointerEvents: "none", filter: "blur(40px)" }} />
+    <section style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", padding: "100px 0 60px", overflow: "hidden" }}>
+      {/* Background accent */}
+      <div style={{ position: "absolute", top: 0, right: 0, width: "50%", height: "100%", background: "radial-gradient(ellipse 80% 60% at 80% 40%, rgba(124,58,237,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.05)" }} />
 
       {W(
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative", zIndex: 2 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center", position: "relative", zIndex: 2 }}>
 
-          {/* Status badge */}
-          <motion.div {...fadeUp} transition={{ duration: 0.5 }}
-            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 32, padding: "6px 16px", borderRadius: 999, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", display: "block" }} />
-            <span style={{ fontSize: 12, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", fontWeight: 600 }}>Live · Base Testnet</span>
-          </motion.div>
+          {/* ── LEFT: Text content ── */}
+          <div>
+            {/* Network chip */}
+            <motion.div {...fadeUp} transition={{ duration: 0.4 }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, padding: "5px 14px", borderRadius: 8, background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", display: "block", flexShrink: 0 }} />
+              <span style={{ fontSize: 11, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "#10B981", fontWeight: 600 }}>Live on Base Testnet</span>
+            </motion.div>
 
-          {/* Headline */}
-          <motion.h1 {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }}
-            style={{ fontSize: "clamp(2.8rem,8vw,6rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.04em", fontFamily: "var(--font-space-grotesk,sans-serif)", margin: "0 0 20px", color: "#fff" }}>
-            Predict Markets.<br />
-            <span style={{ color: "#7C3AED" }}>Win Real Rewards.</span>
-          </motion.h1>
+            {/* Headline — left-aligned, bold, single color */}
+            <motion.h1 {...fadeUp} transition={{ duration: 0.5, delay: 0.08 }}
+              style={{ fontSize: "clamp(2.6rem,5vw,4.2rem)", fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.045em", fontFamily: "var(--font-space-grotesk,sans-serif)", margin: "0 0 22px", color: "#fff" }}>
+              The smarter way<br />
+              to bet on<br />
+              <span style={{ color: "#7C3AED" }}>what you know.</span>
+            </motion.h1>
 
-          {/* Subheadline */}
-          <motion.p {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}
-            style={{ fontSize: "clamp(1rem,2vw,1.2rem)", color: "rgba(255,255,255,0.4)", maxWidth: 520, lineHeight: 1.8, margin: "0 0 48px" }}>
-            Put your conviction on-chain. Create markets, place predictions, and get paid automatically when you're right.
-          </motion.p>
+            {/* Description */}
+            <motion.p {...fadeUp} transition={{ duration: 0.5, delay: 0.16 }}
+              style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", lineHeight: 1.75, margin: "0 0 36px", maxWidth: 420 }}>
+              WAGR lets you create prediction markets on any topic and earn USDC when your call is right. No middlemen. Smart contracts handle everything.
+            </motion.p>
 
-          {/* CTA Buttons */}
-          <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.3 }}
-            style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 64 }}>
-            <Link href="/markets">
-              <button style={{
-                padding: "14px 32px", borderRadius: 12, fontWeight: 700, fontSize: 15, color: "#fff", border: "none", cursor: "pointer",
-                background: "#7C3AED", fontFamily: "var(--font-space-grotesk,sans-serif)",
-                display: "flex", alignItems: "center", gap: 8, transition: "background 0.2s, transform 0.15s"
-              }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#6D28D9"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#7C3AED"; }}>
-                Start Predicting <ArrowRight size={16} />
-              </button>
-            </Link>
-            <Link href="/create">
-              <button style={{
-                padding: "14px 32px", borderRadius: 12, fontWeight: 600, fontSize: 15,
-                color: "rgba(255,255,255,0.65)", background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", transition: "all 0.2s"
-              }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.4)"; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.65)"; }}>
-                Create Market
-              </button>
-            </Link>
-          </motion.div>
+            {/* CTAs */}
+            <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.22 }}
+              style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 52 }}>
+              <Link href="/markets">
+                <button style={{
+                  padding: "13px 28px", borderRadius: 10, fontWeight: 700, fontSize: 14, color: "#fff",
+                  border: "none", cursor: "pointer", background: "#7C3AED",
+                  display: "flex", alignItems: "center", gap: 8, transition: "background 0.2s",
+                  fontFamily: "var(--font-space-grotesk,sans-serif)"
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#6D28D9"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#7C3AED"; }}>
+                  Browse Markets <ArrowRight size={15} />
+                </button>
+              </Link>
+              <Link href="/create" style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.5)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6, transition: "color 0.2s" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.5)"; }}>
+                Create a market <ArrowRight size={13} />
+              </Link>
+            </motion.div>
 
-          {/* Stats */}
-          <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.4 }}>
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 1, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}>
+            {/* Stats — inline, minimal */}
+            <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.28 }}
+              style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
               {[
-                { label: "Markets Live", value: String(count), color: "#7C3AED" },
-                { label: "Auto-Payouts", value: "100%", color: "#10B981" },
-                { label: "Platform Fee", value: "1%", color: "rgba(255,255,255,0.7)" },
-                { label: "Network", value: "Base", color: "#2563EB" },
-              ].map((s, i, arr) => (
-                <React.Fragment key={s.label}>
-                  <div style={{ padding: "20px 32px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                    <span style={{ fontSize: 24, fontWeight: 800, fontFamily: "monospace", color: s.color }}>{s.value}</span>
-                    <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</span>
-                  </div>
-                  {i < arr.length - 1 && <div style={{ width: 1, background: "rgba(255,255,255,0.06)", alignSelf: "stretch" }} />}
-                </React.Fragment>
+                { value: String(count), label: "Active Markets", color: "#7C3AED" },
+                { value: "1%", label: "Platform Fee", color: "rgba(255,255,255,0.6)" },
+                { value: "Base", label: "Network", color: "#2563EB" },
+              ].map(s => (
+                <div key={s.label} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <span style={{ fontSize: 22, fontWeight: 800, fontFamily: "monospace", color: s.color, lineHeight: 1 }}>{s.value}</span>
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "monospace" }}>{s.label}</span>
+                </div>
               ))}
+            </motion.div>
+          </div>
+
+          {/* ── RIGHT: Live market preview card ── */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            style={{ position: "relative" }}>
+
+            {/* Main card */}
+            <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.09)", padding: 28, backdropFilter: "blur(8px)" }}>
+              {/* Card header */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 6, background: "rgba(37,99,235,0.15)", color: "#60A5FA", border: "1px solid rgba(37,99,235,0.25)" }}>Crypto</span>
+                </div>
+                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "monospace" }}>Closes in 12d 4h</span>
+              </div>
+
+              <p style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.88)", lineHeight: 1.5, margin: "0 0 22px" }}>
+                Will Bitcoin reach $150,000 before end of 2025?
+              </p>
+
+              {/* Probability bar */}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#10B981" }}>YES</span>
+                    <span style={{ fontSize: 20, fontWeight: 800, color: "#10B981", fontFamily: "monospace" }}>72%</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 20, fontWeight: 800, color: "#EF4444", fontFamily: "monospace" }}>28%</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#EF4444" }}>NO</span>
+                  </div>
+                </div>
+                <div style={{ height: 6, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden", display: "flex" }}>
+                  <motion.div
+                    initial={{ width: 0 }} animate={{ width: "72%" }}
+                    transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
+                    style={{ background: "#10B981", borderRadius: "99px 0 0 99px" }} />
+                  <motion.div
+                    initial={{ width: 0 }} animate={{ width: "28%" }}
+                    transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
+                    style={{ background: "#EF4444", borderRadius: "0 99px 99px 0" }} />
+                </div>
+              </div>
+
+              {/* Bet buttons */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+                <button style={{ padding: "11px 0", borderRadius: 10, fontWeight: 700, fontSize: 14, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", cursor: "pointer" }}>
+                  Bet YES
+                </button>
+                <button style={{ padding: "11px 0", borderRadius: 10, fontWeight: 700, fontSize: 14, color: "#EF4444", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", cursor: "pointer" }}>
+                  Bet NO
+                </button>
+              </div>
+
+              {/* Footer */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Pool: <strong style={{ color: "rgba(255,255,255,0.55)" }}>$2,400</strong></span>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>248 predictors</span>
+              </div>
+            </div>
+
+            {/* Small floating tag below */}
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderRadius: 12, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(124,58,237,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Shield size={14} color="#7C3AED" />
+              </div>
+              <div>
+                <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>Smart Contract Secured</p>
+                <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.28)" }}>Funds locked on-chain until resolution</p>
+              </div>
             </div>
           </motion.div>
-        </div>
+
+        </div>,
+        1200
       )}
+
+      {/* Mobile: stack columns */}
+      <style>{`
+        @media(max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .hero-right { display: none; }
+        }
+      `}</style>
     </section>
   );
 }
