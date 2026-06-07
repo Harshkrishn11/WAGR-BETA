@@ -174,7 +174,7 @@ function Hero() {
           {/* Subheadline */}
           <motion.p {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}
             style={{ fontSize: "clamp(1rem,2vw,1.2rem)", color: "rgba(255,255,255,0.4)", maxWidth: 520, lineHeight: 1.8, margin: "0 0 48px" }}>
-            On-chain prediction markets on Base. Bet on crypto, sports, politics — instant payouts, zero middlemen.
+            Put your conviction on-chain. Create markets, place predictions, and get paid automatically when you're right.
           </motion.p>
 
           {/* CTA Buttons */}
