@@ -438,34 +438,127 @@ function CTA() {
     <section style={{ padding: "80px 0 120px", position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       {W(
         <motion.div {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-          style={{ padding: "64px 40px", borderRadius: 24, textAlign: "center", position: "relative", overflow: "hidden", background: "rgba(124,58,237,0.06)", border: "1px solid rgba(124,58,237,0.2)" }}>
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,58,237,0.12), transparent)", pointerEvents: "none" }} />
-          <div style={{ position: "relative" }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-              <TrendingUp size={24} color="#7C3AED" />
+          style={{ padding: "56px 48px", borderRadius: 24, position: "relative", overflow: "hidden", background: "rgba(124,58,237,0.04)", border: "1px solid rgba(124,58,237,0.18)" }}>
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,58,237,0.1), transparent)", pointerEvents: "none" }} />
+          <div className="cta-container" style={{ position: "relative" }}>
+            
+            {/* Left Column */}
+            <div className="cta-left">
+              <div style={{ fontSize: 11, fontFamily: "monospace", letterSpacing: "0.15em", textTransform: "uppercase", color: "#A78BFA", fontWeight: 700, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+                <TrendingUp size={12} color="#A78BFA" />
+                <span>Put your conviction to the test</span>
+              </div>
+              <h2 style={{ fontSize: "clamp(2rem,4.2vw,3rem)", fontWeight: 900, color: "#fff", margin: "0 0 16px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.04em", lineHeight: 1.15 }}>
+                Predict the future,<br />Get paid instantly.
+              </h2>
+              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 0 32px", lineHeight: 1.7 }}>
+                Connect your wallet, browse active markets on Base, and trade prediction shares on sports, crypto, and macro events. Smart contracts handle everything automatically.
+              </p>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <Link href="/markets">
+                  <button style={{
+                    padding: "14px 32px", borderRadius: 12, fontWeight: 700, fontSize: 14, color: "#fff",
+                    border: "none", cursor: "pointer", background: "#7C3AED",
+                    display: "flex", alignItems: "center", gap: 8, transition: "background 0.2s, transform 0.1s",
+                    fontFamily: "var(--font-space-grotesk,sans-serif)"
+                  }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#6D28D9"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#7C3AED"; }}>
+                    Explore Markets <ArrowRight size={15} />
+                  </button>
+                </Link>
+                <Link href="/bet/create">
+                  <button style={{
+                    padding: "14px 32px", borderRadius: 12, fontWeight: 600, fontSize: 14,
+                    color: "rgba(255,255,255,0.65)", background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.color = "#fff";
+                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.4)";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.04)";
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.65)";
+                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
+                    }}
+                  >
+                    Bet a Friend
+                  </button>
+                </Link>
+              </div>
             </div>
-            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#fff", margin: "0 0 14px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
-              Ready to predict the future?
-            </h2>
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", maxWidth: 440, margin: "0 auto 36px", lineHeight: 1.7 }}>
-              Join WAGR and put money behind your convictions. The smarter you predict, the more you earn.
-            </p>
-            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/markets">
-                <button style={{ padding: "14px 32px", borderRadius: 12, fontWeight: 700, fontSize: 15, color: "#fff", border: "none", cursor: "pointer", background: "#7C3AED", display: "flex", alignItems: "center", gap: 8, transition: "background 0.2s" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#6D28D9"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#7C3AED"; }}>
-                  Explore Markets <ArrowRight size={16} />
-                </button>
-              </Link>
-              <Link href="/bet/create">
-                <button style={{ padding: "14px 32px", borderRadius: 12, fontWeight: 600, fontSize: 15, color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", transition: "all 0.2s" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.4)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.6)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; }}>
-                  Bet a Friend
-                </button>
-              </Link>
+
+            {/* Right Column (Tickets visual stack) */}
+            <div className="cta-right">
+              {/* Ticket 1 (Settled Bet) */}
+              <motion.div
+                initial={{ rotate: -3 }}
+                animate={{ y: [-6, 6, -6] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  position: "absolute",
+                  width: 250,
+                  padding: 18,
+                  borderRadius: 16,
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)",
+                  border: "1px solid rgba(255,255,255,0.09)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+                  left: "0%",
+                  top: "0%",
+                  zIndex: 2,
+                  textAlign: "left"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "2px 6px", borderRadius: 4, background: "rgba(124,58,237,0.15)", color: "#C084FC", border: "1px solid rgba(124,58,237,0.25)" }}>Crypto</span>
+                  <span style={{ fontSize: 10, color: "#10B981", fontWeight: 700, display: "flex", alignItems: "center", gap: 3 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981" }} />
+                    +180.00 USDC
+                  </span>
+                </div>
+                <p style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>Will BTC cross $100k in 2025?</p>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
+                  <span>Position: <strong style={{ color: "#10B981" }}>YES</strong></span>
+                  <span>Tx: <span style={{ fontFamily: "monospace", color: "rgba(255,255,255,0.45)" }}>0x9a2f...</span></span>
+                </div>
+              </motion.div>
+
+              {/* Ticket 2 (Active Bet) */}
+              <motion.div
+                initial={{ rotate: 4 }}
+                animate={{ y: [6, -6, 6] }}
+                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  position: "absolute",
+                  width: 240,
+                  padding: 16,
+                  borderRadius: 16,
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+                  right: "0%",
+                  bottom: "0%",
+                  zIndex: 1,
+                  textAlign: "left"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "2px 6px", borderRadius: 4, background: "rgba(37,99,235,0.15)", color: "#60A5FA", border: "1px solid rgba(37,99,235,0.25)" }}>Macro</span>
+                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Closes 2d</span>
+                </div>
+                <p style={{ margin: "0 0 12px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)" }}>Fed cuts interest rates in Sep?</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>Option: <strong style={{ color: "#EF4444" }}>NO</strong></span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#EF4444" }}>74% Chance</span>
+                </div>
+              </motion.div>
             </div>
+
           </div>
         </motion.div>
       )}
@@ -495,6 +588,34 @@ export default function Home() {
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         html, body { overflow-x: hidden; }
+        .cta-container {
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 48px;
+          align-items: center;
+        }
+        .cta-left {
+          text-align: left;
+        }
+        .cta-right {
+          display: flex;
+          justify-content: center;
+          position: relative;
+          height: 250px;
+          width: 100%;
+        }
+        @media(max-width: 768px) {
+          .cta-container {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+          .cta-left {
+            text-align: center !important;
+          }
+          .cta-right {
+            display: none !important;
+          }
+        }
         @media(max-width:768px){
           section { padding-top:56px !important; padding-bottom:56px !important; }
         }
