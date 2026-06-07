@@ -7,7 +7,7 @@ import { getContract, prepareContractCall, readContract } from "thirdweb";
 import { client } from "@/lib/thirdweb";
 import { activeChain, PREDICTION_MARKET_ADDRESS } from "@/lib/contracts";
 import PREDICTION_MARKET_ABI from "@/lib/WagrPredictionMarket.json";
-import { Shield, CheckCircle, XCircle, AlertTriangle, Clock, RefreshCw, ChevronDown, ChevronUp, Search, TrendingUp, DollarSign, Settings, Activity, Key, Copy, Trash2, Plus } from "lucide-react";
+import { Shield, CheckCircle, XCircle, AlertTriangle, Clock, RefreshCw, ChevronDown, ChevronUp, Search, TrendingUp, DollarSign, Settings, Activity } from "lucide-react";
 import toast from "react-hot-toast";
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -334,8 +334,6 @@ export default function AdminPage() {
     } catch (e: any) {
       setTxMsg(`❌ Error: ${e?.message?.slice(0, 80) ?? "Transaction failed"}`);
     }
-  }
-
   }
 
   // ── Auth Gate: Only wallet owner can access ──
