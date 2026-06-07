@@ -4,8 +4,6 @@ import "./globals.css";
 import { ThirdwebProvider } from "thirdweb/react";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/layout/Header";
-import InviteGate from "@/components/InviteGate";
-
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 
@@ -46,10 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Site wrapper — stacks header / main / footer */}
           <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-            <InviteGate>
-              <Header />
-              <main style={{ flex: 1 }}>{children}</main>
-            </InviteGate>
+            <Header />
+            <main style={{ flex: 1 }}>{children}</main>
           </div>
 
           <Toaster

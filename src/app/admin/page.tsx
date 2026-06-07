@@ -271,14 +271,7 @@ export default function AdminPage() {
   const [filter, setFilter]   = useState<"all"|"action"|"active"|"resolved"|"done">("action");
   const [search, setSearch]   = useState("");
   const [txMsg,  setTxMsg]    = useState("");
-  const [activeTab, setActiveTab] = useState<"dashboard"|"codes"|"settings">("dashboard");
-
-  // Invite codes state
-  const [codes, setCodes] = useState<string[]>([]);
-  const [approvedCount, setApprovedCount] = useState(0);
-  const [genCount, setGenCount] = useState(1);
-  const [codesLoading, setCodesLoading] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState<"dashboard"|"settings">("dashboard");
 
   const contract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS!, abi: PREDICTION_MARKET_ABI as any });
   const { data: ownerData } = useReadContract({ contract, method: "owner", params: [] } as any);
@@ -343,51 +336,7 @@ export default function AdminPage() {
     }
   }
 
-  // Invite code helpers
-  async function fetchCodes() {
-    if (!account) return;
-    setCodesLoading(true);
-    try {
-      const res = await fetch("/api/admin/invite-codes", {
-        headers: { "x-admin-wallet": account.address },
-      });
-      const data = await res.json();
-      if (data.codes) { setCodes(data.codes); setApprovedCount(data.approvedCount); }
-    } finally {
-      setCodesLoading(false);
-    }
   }
-
-  async function generateCodes() {
-    if (!account) return;
-    setGenerating(true);
-    try {
-      const res = await fetch("/api/admin/invite-codes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-wallet": account.address },
-        body: JSON.stringify({ count: genCount }),
-      });
-      const data = await res.json();
-      if (data.success) { await fetchCodes(); }
-    } finally {
-      setGenerating(false);
-    }
-  }
-
-  async function deleteCode(code: string) {
-    if (!account) return;
-    await fetch(`/api/admin/invite-codes/${encodeURIComponent(code)}`, {
-      method: "DELETE",
-      headers: { "x-admin-wallet": account.address },
-    });
-    setCodes(prev => prev.filter(c => c !== code));
-  }
-
-  // Load codes when tab is opened
-  useEffect(() => {
-    if (activeTab === "codes" && account) fetchCodes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, account]);
 
   // ── Auth Gate: Only wallet owner can access ──
   if (!account || !ownerAddress) {
@@ -457,9 +406,6 @@ export default function AdminPage() {
           <button onClick={() => setActiveTab("dashboard")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "dashboard" ? "#fff" : "rgba(255,255,255,0.4)", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "dashboard" ? "2px solid #9B5CFF" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap" }}>
             <Activity size={16} /> Overview & Markets
           </button>
-          <button onClick={() => setActiveTab("codes")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "codes" ? "#fff" : "rgba(255,255,255,0.4)", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "codes" ? "2px solid #06B6D4" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap" }}>
-            <Key size={16} /> Invite Codes {codes.length > 0 && <span style={{ background: "rgba(6,182,212,0.2)", color: "#06B6D4", fontSize: 11, fontWeight: 800, padding: "2px 8px", borderRadius: 99, fontFamily: "monospace" }}>{codes.length}</span>}
-          </button>
           <button onClick={() => setActiveTab("settings")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "settings" ? "#fff" : "rgba(255,255,255,0.4)", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "settings" ? "2px solid #9B5CFF" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap" }}>
             <Settings size={16} /> Advanced Settings
           </button>
@@ -476,90 +422,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {activeTab === "codes" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {/* Stats row */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
-              <div style={{ background: "rgba(6,182,212,0.06)", border: "1px solid rgba(6,182,212,0.2)", borderRadius: 16, padding: 20 }}>
-                <p style={{ margin: "0 0 8px", fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Active Codes</p>
-                <p style={{ margin: 0, fontSize: 32, fontWeight: 900, color: "#06B6D4", fontFamily: "monospace" }}>{codesLoading ? "..." : codes.length}</p>
-              </div>
-              <div style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 16, padding: 20 }}>
-                <p style={{ margin: "0 0 8px", fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Beta Users Approved</p>
-                <p style={{ margin: 0, fontSize: 32, fontWeight: 900, color: "#34D399", fontFamily: "monospace" }}>{codesLoading ? "..." : approvedCount}</p>
-              </div>
-            </div>
 
-            {/* Generate new codes */}
-            <div style={{ background: "rgba(6,182,212,0.04)", border: "1px solid rgba(6,182,212,0.15)", borderRadius: 20, padding: 24, marginBottom: 28 }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 800, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
-                <Plus size={18} color="#06B6D4" /> Generate New Invite Codes
-              </h3>
-              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <label style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", fontFamily: "monospace" }}>Count:</label>
-                  <input
-                    type="number" min={1} max={50} value={genCount}
-                    onChange={e => setGenCount(Math.min(50, Math.max(1, Number(e.target.value))))}
-                    style={{ width: 70, padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(6,182,212,0.3)", background: "rgba(6,182,212,0.05)", color: "#fff", fontSize: 15, fontFamily: "monospace", outline: "none" }}
-                  />
-                </div>
-                <button
-                  onClick={generateCodes}
-                  disabled={generating}
-                  style={{ padding: "10px 24px", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #0891B2, #06B6D4)", color: "#fff", fontWeight: 800, fontSize: 14, cursor: generating ? "not-allowed" : "pointer", opacity: generating ? 0.6 : 1, display: "flex", alignItems: "center", gap: 8 }}>
-                  <Key size={16} /> {generating ? "Generating..." : `Generate ${genCount} Code${genCount > 1 ? "s" : ""}`}
-                </button>
-                <button
-                  onClick={fetchCodes}
-                  style={{ padding: "10px 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-                  <RefreshCw size={14} /> Refresh
-                </button>
-              </div>
-              <p style={{ margin: "12px 0 0", fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
-                Each code can only be used once. Codes are in format WAGR-XXXXXXXX.
-              </p>
-            </div>
-
-            {/* Codes list */}
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, overflow: "hidden" }}>
-              <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#fff" }}>Active Invite Codes</h3>
-                <span style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.3)" }}>{codes.length} unused</span>
-              </div>
-              {codesLoading ? (
-                <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Loading...</div>
-              ) : codes.length === 0 ? (
-                <div style={{ padding: 40, textAlign: "center" }}>
-                  <Key size={32} color="rgba(255,255,255,0.1)" style={{ marginBottom: 12 }} />
-                  <p style={{ color: "rgba(255,255,255,0.3)", margin: 0, fontFamily: "monospace" }}>No active codes. Generate some above.</p>
-                </div>
-              ) : (
-                <div>
-                  {codes.map((code, i) => (
-                    <div key={code} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px",
-                      borderBottom: i < codes.length - 1 ? "1px solid rgba(255,255,255,0.03)" : "none",
-                      background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}>
-                      <span style={{ fontSize: 15, fontFamily: "monospace", color: "#06B6D4", letterSpacing: "0.08em", fontWeight: 700 }}>{code}</span>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                          onClick={() => { navigator.clipboard.writeText(code); toast.success("Copied!"); }}
-                          style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(6,182,212,0.2)", background: "rgba(6,182,212,0.05)", color: "#06B6D4", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600 }}>
-                          <Copy size={13} /> Copy
-                        </button>
-                        <button
-                          onClick={() => deleteCode(code)}
-                          style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(248,113,113,0.2)", background: "rgba(248,113,113,0.05)", color: "#f87171", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600 }}>
-                          <Trash2 size={13} /> Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
 
         {activeTab === "dashboard" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
