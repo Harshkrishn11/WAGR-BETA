@@ -150,16 +150,16 @@ function Hero() {
   const count = nextMarketId !== undefined ? Number(nextMarketId) : 0;
 
   return (
-    <section style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", padding: "100px 0 60px", overflow: "hidden" }}>
+    <section className="hero-section" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", padding: "100px 0 60px", overflow: "hidden" }}>
       {/* Background accent */}
       <div style={{ position: "absolute", top: 0, right: 0, width: "50%", height: "100%", background: "radial-gradient(ellipse 80% 60% at 80% 40%, rgba(124,58,237,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.05)" }} />
 
       {W(
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center", position: "relative", zIndex: 2 }}>
+        <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center", position: "relative", zIndex: 2 }}>
 
           {/* ── LEFT: Text content ── */}
-          <div>
+          <div className="hero-left">
             {/* Network chip */}
             <motion.div {...fadeUp} transition={{ duration: 0.4 }}
               style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, padding: "5px 14px", borderRadius: 8, background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}>
@@ -221,6 +221,7 @@ function Hero() {
 
           {/* ── RIGHT: Live market preview card ── */}
           <motion.div
+            className="hero-right"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -438,13 +439,14 @@ function CTA() {
     <section style={{ padding: "80px 0 120px", position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       {W(
         <motion.div {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+          className="cta-card"
           style={{ padding: "56px 48px", borderRadius: 24, position: "relative", overflow: "hidden", background: "rgba(124,58,237,0.04)", border: "1px solid rgba(124,58,237,0.18)" }}>
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,58,237,0.1), transparent)", pointerEvents: "none" }} />
           <div className="cta-container" style={{ position: "relative" }}>
             
             {/* Left Column */}
             <div className="cta-left">
-              <div style={{ fontSize: 11, fontFamily: "monospace", letterSpacing: "0.15em", textTransform: "uppercase", color: "#A78BFA", fontWeight: 700, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+              <div className="cta-tagline" style={{ fontSize: 11, fontFamily: "monospace", letterSpacing: "0.15em", textTransform: "uppercase", color: "#A78BFA", fontWeight: 700, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
                 <TrendingUp size={12} color="#A78BFA" />
                 <span>Put your conviction to the test</span>
               </div>
@@ -454,7 +456,7 @@ function CTA() {
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 0 32px", lineHeight: 1.7 }}>
                 Connect your wallet, browse active markets on Base, and trade prediction shares on sports, crypto, and macro events. Smart contracts handle everything automatically.
               </p>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div className="cta-buttons" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <Link href="/markets">
                   <button style={{
                     padding: "14px 32px", borderRadius: 12, fontWeight: 700, fontSize: 14, color: "#fff",
@@ -588,15 +590,15 @@ export default function Home() {
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         html, body { overflow-x: hidden; }
+
+        /* ── CTA Desktop ── */
         .cta-container {
           display: grid;
           grid-template-columns: 1.15fr 0.85fr;
           gap: 48px;
           align-items: center;
         }
-        .cta-left {
-          text-align: left;
-        }
+        .cta-left { text-align: left; }
         .cta-right {
           display: flex;
           justify-content: center;
@@ -604,24 +606,97 @@ export default function Home() {
           height: 250px;
           width: 100%;
         }
+
+        /* ── Mobile: 768px and below ── */
         @media(max-width: 768px) {
-          .cta-container {
+          /* Hero */
+          .hero-section {
+            min-height: auto !important;
+            padding: 80px 0 40px !important;
+          }
+          .hero-grid {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
+          }
+          .hero-left {
+            text-align: center !important;
+          }
+          .hero-left h1 {
+            font-size: clamp(2rem, 8vw, 2.8rem) !important;
+          }
+          .hero-left p {
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .hero-right {
+            display: none !important;
+          }
+
+          /* CTA */
+          .cta-card {
+            padding: 32px 20px !important;
+            border-radius: 16px !important;
+          }
+          .cta-container {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
           }
           .cta-left {
             text-align: center !important;
           }
+          .cta-left h2 {
+            font-size: clamp(1.6rem, 7vw, 2.2rem) !important;
+          }
+          .cta-left p {
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .cta-tagline {
+            justify-content: center !important;
+          }
+          .cta-buttons {
+            justify-content: center !important;
+          }
           .cta-right {
             display: none !important;
           }
+
+          /* Sections */
+          section {
+            padding-top: 56px !important;
+            padding-bottom: 56px !important;
+          }
         }
-        @media(max-width:768px){
-          section { padding-top:56px !important; padding-bottom:56px !important; }
+
+        /* ── Extra small: 480px and below ── */
+        @media(max-width: 480px) {
+          .hero-section {
+            padding: 72px 0 32px !important;
+          }
+          .hero-left h1 {
+            font-size: 1.8rem !important;
+          }
+          .cta-card {
+            padding: 24px 16px !important;
+          }
+          .cta-left h2 {
+            font-size: 1.5rem !important;
+          }
+          .cta-buttons {
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .cta-buttons button {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          section {
+            padding-top: 40px !important;
+            padding-bottom: 40px !important;
+          }
         }
-        @media(max-width:480px){
-          section { padding-top:40px !important; padding-bottom:40px !important; }
-        }
+
+        /* ── Touch devices ── */
         @media(hover: none) and (pointer: coarse) {
           button, a { min-height: 44px; }
         }
