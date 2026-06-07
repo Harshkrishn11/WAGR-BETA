@@ -237,7 +237,7 @@ function Hero() {
               </div>
 
               <p style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.88)", lineHeight: 1.5, margin: "0 0 22px" }}>
-                Will Bitcoin reach $150,000 before end of 2025?
+                Will BTC hit $150,000 before end of 2026?
               </p>
 
               {/* Probability bar */}
