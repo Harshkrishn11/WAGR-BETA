@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ConnectButton, useActiveAccount, useReadContract } from "thirdweb/react";
@@ -66,22 +67,20 @@ export default function Header() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68, gap: 16 }}>
 
           {/* Logo */}
-          <Link href="/" style={{ textDecoration: "none", flexShrink: 0, display: "flex", alignItems: "center", gap: 10 }}>
+          <Link href="/" style={{ textDecoration: "none", flexShrink: 0, display: "flex", alignItems: "center" }}>
             <motion.div
-              whileHover={{ scale: 1.08, rotate: -5 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: "linear-gradient(135deg, #7C3AED, #A855F7, #06B6D4)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 0 24px rgba(124,58,237,0.6), 0 0 48px rgba(6,182,212,0.2)",
-              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
             >
-              <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", fontFamily: "monospace", lineHeight: 1 }}>W</span>
+              <Image
+                src="/wagr-logo.png"
+                alt="WAGR"
+                width={120}
+                height={40}
+                style={{ objectFit: "contain", display: "block" }}
+                priority
+              />
             </motion.div>
-            <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.04em", color: "#fff", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>
-              WAGR
-            </span>
           </Link>
 
           {/* Desktop Nav */}
