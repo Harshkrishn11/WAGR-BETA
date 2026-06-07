@@ -15,18 +15,29 @@ const W = (children: React.ReactNode, maxW = 1200) => (
 
 /* ═══ LIVELY BACKGROUND ══════════════════════════════════════════ */
 function Background() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => { setIsMobile(window.innerWidth < 768); }, []);
+
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden", background: "#050510" }}>
-      {/* Colour blobs */}
-      <motion.div animate={{ x: [0,80,0], y: [0,-60,0], scale:[1,1.2,1] }} transition={{ duration:20, repeat:Infinity, ease:"easeInOut" }}
-        style={{ position:"absolute", top:"-5%", left:"10%", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle, rgba(120,40,255,0.35) 0%, transparent 70%)", filter:"blur(60px)" }} />
-      <motion.div animate={{ x:[0,-60,0], y:[0,80,0], scale:[1,1.3,1] }} transition={{ duration:25, repeat:Infinity, ease:"easeInOut", delay:3 }}
-        style={{ position:"absolute", top:"20%", right:"-5%", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,200,255,0.25) 0%, transparent 70%)", filter:"blur(60px)" }} />
-      <motion.div animate={{ x:[0,50,-30,0], y:[0,-40,60,0] }} transition={{ duration:30, repeat:Infinity, ease:"easeInOut", delay:6 }}
-        style={{ position:"absolute", bottom:"10%", left:"25%", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,60,180,0.2) 0%, transparent 70%)", filter:"blur(70px)" }} />
-      <motion.div animate={{ x:[0,-40,0], y:[0,40,0] }} transition={{ duration:18, repeat:Infinity, ease:"easeInOut", delay:10 }}
-        style={{ position:"absolute", bottom:"5%", right:"20%", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,200,0,0.15) 0%, transparent 70%)", filter:"blur(60px)" }} />
-
+      {/* Colour blobs — static on mobile, animated on desktop */}
+      {isMobile ? (
+        <>
+          <div style={{ position:"absolute", top:"-5%", left:"10%", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle, rgba(120,40,255,0.25) 0%, transparent 70%)", filter:"blur(40px)" }} />
+          <div style={{ position:"absolute", top:"30%", right:"-5%", width:350, height:350, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,200,255,0.18) 0%, transparent 70%)", filter:"blur(40px)" }} />
+        </>
+      ) : (
+        <>
+          <motion.div animate={{ x: [0,80,0], y: [0,-60,0], scale:[1,1.2,1] }} transition={{ duration:20, repeat:Infinity, ease:"easeInOut" }}
+            style={{ position:"absolute", top:"-5%", left:"10%", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle, rgba(120,40,255,0.35) 0%, transparent 70%)", filter:"blur(60px)" }} />
+          <motion.div animate={{ x:[0,-60,0], y:[0,80,0], scale:[1,1.3,1] }} transition={{ duration:25, repeat:Infinity, ease:"easeInOut", delay:3 }}
+            style={{ position:"absolute", top:"20%", right:"-5%", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,200,255,0.25) 0%, transparent 70%)", filter:"blur(60px)" }} />
+          <motion.div animate={{ x:[0,50,-30,0], y:[0,-40,60,0] }} transition={{ duration:30, repeat:Infinity, ease:"easeInOut", delay:6 }}
+            style={{ position:"absolute", bottom:"10%", left:"25%", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,60,180,0.2) 0%, transparent 70%)", filter:"blur(70px)" }} />
+          <motion.div animate={{ x:[0,-40,0], y:[0,40,0] }} transition={{ duration:18, repeat:Infinity, ease:"easeInOut", delay:10 }}
+            style={{ position:"absolute", bottom:"5%", right:"20%", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,200,0,0.15) 0%, transparent 70%)", filter:"blur(60px)" }} />
+        </>
+      )}
       {/* Dot grid */}
       <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)", backgroundSize:"40px 40px" }} />
       {/* Edge vignette */}
@@ -37,7 +48,11 @@ function Background() {
 
 /* ═══ FLOATING PARTICLES ═════════════════════════════════════════ */
 function Sparks() {
-  const sparks = Array.from({ length: 30 }, (_, i) => ({
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => { setIsMobile(window.innerWidth < 768); }, []);
+
+  const count = isMobile ? 8 : 30;
+  const sparks = Array.from({ length: count }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: 100 - Math.random() * 40,
@@ -52,7 +67,7 @@ function Sparks() {
         <motion.div key={s.id}
           animate={{ y: [0, -(Math.random()*300+200)], opacity:[0,1,0] }}
           transition={{ duration:s.dur, repeat:Infinity, delay:s.delay, ease:"easeOut" }}
-          style={{ position:"absolute", left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, borderRadius:"50%", background:s.color, boxShadow:`0 0 ${s.size*4}px ${s.color}` }}
+          style={{ position:"absolute", left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, borderRadius:"50%", background:s.color, boxShadow: isMobile ? "none" : `0 0 ${s.size*4}px ${s.color}` }}
         />
       ))}
     </div>
@@ -282,7 +297,7 @@ function TrendingMarkets() {
         </motion.div>
 
         {ids.length>0 ? (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))", gap:18 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,310px),1fr))", gap:18 }}>
             {ids.map((id,i) => <MarketCard key={id} marketId={id} index={i} />)}
           </div>
         ) : (
@@ -317,7 +332,7 @@ function HowItWorks() {
           <p style={{ fontSize:16, color:"rgba(255,255,255,0.35)", maxWidth:400, margin:"0 auto" }}>No middlemen. No trust. Pure math.</p>
         </motion.div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:24, position:"relative" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,280px),1fr))", gap:24, position:"relative" }}>
           {STEPS.map((s,i) => (
             <motion.div key={i} initial={{opacity:0,y:40}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.7, delay:i*0.15, ease:[0.22,1,0.36,1]}}
               whileHover={{y:-8, transition:{duration:0.2}}}
@@ -366,7 +381,7 @@ function Features() {
           <p style={{ fontSize:16, color:"rgba(255,255,255,0.35)", maxWidth:400, margin:"0 auto" }}>Every feature designed to eliminate trust and maximize fairness.</p>
         </motion.div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,280px),1fr))", gap:16 }}>
           {FEATS.map((f,i) => (
             <motion.div key={i} initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.6, delay:i*0.07, ease:[0.22,1,0.36,1]}}
               whileHover={{y:-6,transition:{duration:0.2}}}
@@ -454,12 +469,37 @@ export default function Home() {
       </div>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        
+        /* Mobile optimizations */
         @media(max-width:768px){
-          section { padding-top:60px !important; padding-bottom:60px !important; }
-          .hero-title { font-size: clamp(2.5rem, 12vw, 4rem) !important; margin-bottom: 16px !important; }
-          .stat-block { padding: 12px 16px !important; }
-          .stat-val { font-size: 20px !important; }
-          .mobile-btn { padding: 12px 24px !important; font-size: 14px !important; width: 100%; justify-content: center; }
+          section { padding-top:48px !important; padding-bottom:48px !important; }
+          .hero-title { font-size: clamp(2rem, 11vw, 3.5rem) !important; margin-bottom: 14px !important; }
+          .stat-block { padding: 12px 14px !important; }
+          .stat-val { font-size: 18px !important; }
+          .mobile-btn { padding: 14px 28px !important; font-size: 14px !important; width: 100%; justify-content: center; }
+        }
+        
+        /* Small mobile */
+        @media(max-width:480px){
+          .hero-title { font-size: clamp(1.8rem, 10vw, 2.8rem) !important; }
+          .stat-block { padding: 10px 10px !important; }
+          .stat-val { font-size: 16px !important; }
+        }
+
+        /* Reduce motion for users who prefer it */
+        @media(prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+        
+        /* Prevent horizontal overflow on mobile */
+        html, body { overflow-x: hidden; }
+        
+        /* Better touch targets */
+        @media(hover: none) and (pointer: coarse) {
+          button, a { min-height: 44px; }
         }
       `}</style>
     </>
