@@ -280,7 +280,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.05)", scrollbarWidth: "none" }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                 {[
                   { id: "resolve",   label: "⚡ Resolve", count: needsResolution.length },
                   { id: "claimable", label: "🎁 Action Required", count: claimableBets.length },
