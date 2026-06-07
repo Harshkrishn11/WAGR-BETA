@@ -68,16 +68,13 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" style={{ textDecoration: "none", flexShrink: 0, display: "flex", alignItems: "center" }}>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-            >
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Image
                 src="/wagr-logo.png"
                 alt="WAGR"
-                width={120}
-                height={40}
-                style={{ objectFit: "contain", display: "block" }}
+                width={80}
+                height={32}
+                style={{ objectFit: "contain", display: "block", height: 32, width: "auto" }}
                 priority
               />
             </motion.div>
