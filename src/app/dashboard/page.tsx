@@ -24,6 +24,8 @@ interface UserBet {
   hasClaimed: boolean;
   hasRefunded: boolean;
   isCreator: boolean;
+  creatorSeedAmount: bigint;
+  seedPenalized: boolean;
 }
 
 interface FriendBetRecord {
@@ -83,6 +85,14 @@ export default function DashboardPage() {
             readContract({ contract: localContract, method: "hasClaimed", params: [BigInt(i), account!.address] }),
             readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), account!.address] }),
           ]);
+
+          // Check if seed was penalized (for invalidated markets)
+          let seedPenalized = false;
+          if (Number(marketData.status) === 3) {
+            try {
+              seedPenalized = await readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), "0x0000000000000000000000000000000000000000"] }) as boolean;
+            } catch { seedPenalized = false; }
+          }
           
           if (yesAmt > 0n || noAmt > 0n || isCreator) {
             userActivity.push({
@@ -96,7 +106,9 @@ export default function DashboardPage() {
               betOnNo: noAmt as bigint,
               hasClaimed: claimed as boolean,
               hasRefunded: refunded as boolean,
-              isCreator
+              isCreator,
+              creatorSeedAmount: marketData.creatorSeedAmount as bigint,
+              seedPenalized,
             });
           }
         }
@@ -217,10 +229,20 @@ export default function DashboardPage() {
   const needsResolution = bets.filter(b => b.isCreator && b.status === 0 && b.deadline < Math.floor(Date.now() / 1000));
   const activeMarkets = bets.filter(b => (b.status === 0 || b.status === 1) && (b.betOnYes > 0n || b.betOnNo > 0n));
   const createdMarkets = bets.filter(b => b.isCreator);
-  const claimableBets = bets.filter(b => 
-    (b.status === 2 && !b.hasClaimed && ((b.correctOptionIndex === 0 && b.betOnYes > 0n) || (b.correctOptionIndex === 1 && b.betOnNo > 0n))) ||
-    (b.status === 3 && !b.hasRefunded && (b.betOnYes > 0n || b.betOnNo > 0n))
-  );
+  const claimableBets = bets.filter(b => {
+    // Winnings claim: resolved, not claimed, bet on winning side
+    if (b.status === 2 && !b.hasClaimed && ((b.correctOptionIndex === 0 && b.betOnYes > 0n) || (b.correctOptionIndex === 1 && b.betOnNo > 0n))) return true;
+    // Refund claim: invalidated, not refunded, has bets
+    if (b.status === 3 && !b.hasRefunded && (b.betOnYes > 0n || b.betOnNo > 0n)) {
+      // But if creator AND seed was penalized, check if actual refund > 0
+      if (b.isCreator && b.seedPenalized) {
+        const totalWager = b.betOnYes + b.betOnNo;
+        if (totalWager <= b.creatorSeedAmount) return false; // refund would be 0
+      }
+      return true;
+    }
+    return false;
+  });
   const wonBets = bets.filter(b => b.status === 2 && b.hasClaimed && ((b.correctOptionIndex === 0 && b.betOnYes > 0n) || (b.correctOptionIndex === 1 && b.betOnNo > 0n)));
   const lostBets = bets.filter(b => b.status === 2 && ((b.correctOptionIndex === 1 && b.betOnYes > 0n) || (b.correctOptionIndex === 0 && b.betOnNo > 0n)));
   const refundedBets = bets.filter(b => b.status === 3 && b.hasRefunded && (b.betOnYes > 0n || b.betOnNo > 0n));
