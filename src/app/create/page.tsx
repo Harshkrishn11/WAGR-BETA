@@ -199,7 +199,7 @@ export default function CreateMarketPage() {
             {/* Top row: WAGR branding + category */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, position: "relative" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #7C3AED, #9B5CFF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800 }}>W</div>
+                <img src="/wagr-logo.png" alt="WAGR" style={{ width: 28, height: 28, borderRadius: 8, objectFit: "contain" }} />
                 <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.08em", opacity: 0.7 }}>WAGR</span>
               </div>
               <span style={{ fontSize: 10, fontFamily: "monospace", padding: "4px 12px", borderRadius: 99, background: `${catColor}30`, border: `1px solid ${catColor}50`, color: catColor, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -230,7 +230,7 @@ export default function CreateMarketPage() {
 
             {/* Bottom bar */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
-              <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>wagr.xyz</span>
+              <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>mywagr.xyz</span>
               <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>Powered by Base</span>
             </div>
           </motion.div>
