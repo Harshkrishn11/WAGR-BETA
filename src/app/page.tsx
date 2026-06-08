@@ -134,12 +134,7 @@ function Hero() {
 
           {/* ── LEFT: Text content ── */}
           <div className="hero-left">
-            {/* Network chip */}
-            <motion.div {...fadeUp} transition={{ duration: 0.4 }}
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, padding: "5px 14px", borderRadius: 8, background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", display: "block", flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "#10B981", fontWeight: 600 }}>Live on Base Testnet</span>
-            </motion.div>
+
 
             {/* Headline — left-aligned, bold, single color */}
             <motion.h1 {...fadeUp} transition={{ duration: 0.5, delay: 0.08 }}
