@@ -263,6 +263,194 @@ function StatCard({ title, value, sub, icon: Icon, color }: any) {
   );
 }
 
+// ─── Settings Panel ──────────────────────────────────────────
+function SettingsPanel({ contract, sendTx, setTxMsg }: { contract: any; sendTx: any; setTxMsg: (s: string) => void }) {
+  const [treasuryInput, setTreasuryInput] = useState("");
+  const [minSeedInput, setMinSeedInput] = useState("");
+  const [newOwnerInput, setNewOwnerInput] = useState("");
+  const [loading, setLoading] = useState<string | null>(null);
+
+  // Read current values from chain
+  const { data: currentTreasury } = useReadContract({ contract, method: "treasuryAddress", params: [] } as any);
+  const { data: currentMinSeed } = useReadContract({ contract, method: "minSeedAmount", params: [] } as any);
+  const { data: isPaused } = useReadContract({ contract, method: "paused", params: [] } as any);
+  const { data: currentOwner } = useReadContract({ contract, method: "owner", params: [] } as any);
+
+  const treasuryAddr = typeof currentTreasury === "string" ? currentTreasury : "";
+  const minSeedUSDC = currentMinSeed ? Number(currentMinSeed) / 1e6 : 5;
+  const paused = isPaused === true;
+  const ownerAddr = typeof currentOwner === "string" ? currentOwner : "";
+
+  async function execTx(label: string, method: string, params: any[]) {
+    setLoading(label);
+    setTxMsg("⏳ Sending transaction...");
+    try {
+      const tx = prepareContractCall({ contract, method, params });
+      let txHash: `0x${string}` = "0x";
+      await new Promise<void>((res, rej) => {
+        sendTx(tx, {
+          onSuccess: async (result: any) => {
+            txHash = result?.transactionHash ?? "0x";
+            try {
+              if (txHash && txHash !== "0x") {
+                await waitForReceipt({ client, chain: activeChain, transactionHash: txHash });
+              }
+              setTxMsg(`✅ ${label} — Done!`);
+              res();
+            } catch {
+              setTxMsg(`✅ ${label} — Tx sent, awaiting confirmation...`);
+              res();
+            }
+          },
+          onError: (e: any) => rej(e),
+        });
+      });
+    } catch (e: any) {
+      setTxMsg(`❌ ${label} failed: ${e?.message?.slice(0, 80) ?? "Unknown error"}`);
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  const cardStyle: React.CSSProperties = { background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 20, padding: "24px 28px", marginBottom: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.03)" };
+  const labelStyle: React.CSSProperties = { fontSize: 14, fontWeight: 700, color: "#111827", marginBottom: 6, fontFamily: "var(--font-space-grotesk,sans-serif)" };
+  const subStyle: React.CSSProperties = { fontSize: 12, color: "#6b7280", fontFamily: "monospace", marginBottom: 14, lineHeight: 1.5 };
+  const inputStyle: React.CSSProperties = { width: "100%", padding: "12px 16px", borderRadius: 12, border: "1px solid #e5e7eb", background: "#f9fafb", color: "#111827", fontSize: 14, fontFamily: "monospace", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" };
+  const btnStyle = (color: string, disabled?: boolean): React.CSSProperties => ({
+    padding: "11px 22px", borderRadius: 12, fontSize: 13, fontWeight: 700, fontFamily: "monospace",
+    cursor: disabled ? "not-allowed" : "pointer", transition: "all 0.2s",
+    background: disabled ? "#e5e7eb" : `${color}15`, border: `1px solid ${disabled ? "#d1d5db" : color}40`,
+    color: disabled ? "#9ca3af" : color, opacity: disabled ? 0.6 : 1, whiteSpace: "nowrap",
+  });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+
+      {/* ── Treasury Address ── */}
+      <div style={cardStyle}>
+        <p style={labelStyle}>🏦 Treasury Address</p>
+        <p style={subStyle}>
+          Where the 1% platform fee is sent on market resolution.<br/>
+          Current: <span style={{ color: "#7C3AED", fontWeight: 600 }}>{treasuryAddr ? `${treasuryAddr.slice(0, 10)}...${treasuryAddr.slice(-6)}` : "Loading..."}</span>
+        </p>
+        <div style={{ display: "flex", gap: 10 }}>
+          <input
+            type="text" placeholder="0x..." value={treasuryInput}
+            onChange={e => setTreasuryInput(e.target.value)}
+            onFocus={e => e.target.style.borderColor = "#7C3AED"}
+            onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+            style={{ ...inputStyle, flex: 1 }}
+          />
+          <button
+            disabled={!treasuryInput || loading === "treasury" || !/^0x[a-fA-F0-9]{40}$/.test(treasuryInput)}
+            onClick={() => execTx("Treasury Update", "setTreasury", [treasuryInput as `0x${string}`])}
+            style={btnStyle("#7C3AED", !treasuryInput || loading === "treasury" || !/^0x[a-fA-F0-9]{40}$/.test(treasuryInput))}
+          >
+            {loading === "treasury" ? "Sending..." : "Update"}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Min Seed Amount ── */}
+      <div style={cardStyle}>
+        <p style={labelStyle}>💎 Minimum Seed Amount</p>
+        <p style={subStyle}>
+          The minimum USDC a creator must deposit to start a market.<br/>
+          Current: <span style={{ color: "#16a34a", fontWeight: 600 }}>${minSeedUSDC.toFixed(2)} USDC</span>
+        </p>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div style={{ position: "relative", flex: 1 }}>
+            <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 14, color: "#9ca3af", fontFamily: "monospace", pointerEvents: "none" }}>$</span>
+            <input
+              type="number" min={1} placeholder="5" value={minSeedInput}
+              onChange={e => setMinSeedInput(e.target.value)}
+              onFocus={e => e.target.style.borderColor = "#16a34a"}
+              onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+              style={{ ...inputStyle, paddingLeft: 28 }}
+            />
+          </div>
+          <button
+            disabled={!minSeedInput || Number(minSeedInput) < 1 || loading === "minseed"}
+            onClick={() => execTx("Min Seed Update", "setMinSeedAmount", [BigInt(Math.round(Number(minSeedInput) * 1_000_000))])}
+            style={btnStyle("#16a34a", !minSeedInput || Number(minSeedInput) < 1 || loading === "minseed")}
+          >
+            {loading === "minseed" ? "Sending..." : "Update"}
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+          {[1, 5, 10, 25, 50].map(v => (
+            <button key={v} onClick={() => setMinSeedInput(String(v))}
+              style={{ flex: 1, padding: "7px 0", borderRadius: 8, fontSize: 11, fontFamily: "monospace", cursor: "pointer",
+                background: minSeedInput === String(v) ? "rgba(22,163,74,0.1)" : "#f9fafb",
+                border: minSeedInput === String(v) ? "1px solid rgba(22,163,74,0.3)" : "1px solid #e5e7eb",
+                color: minSeedInput === String(v) ? "#16a34a" : "#6b7280",
+              }}>
+              ${v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Emergency Pause ── */}
+      <div style={{ ...cardStyle, borderColor: paused ? "rgba(220,38,38,0.3)" : "#e5e7eb", background: paused ? "rgba(220,38,38,0.03)" : "#ffffff" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <p style={labelStyle}>{paused ? "🔴 Contract PAUSED" : "🟢 Contract Active"}</p>
+            <p style={{ ...subStyle, marginBottom: 0 }}>
+              {paused
+                ? "All operations are frozen. No bets, claims, or market creation can happen."
+                : "The contract is running normally. Use Emergency Pause to freeze all operations."}
+            </p>
+          </div>
+          <button
+            disabled={loading === "pause"}
+            onClick={() => execTx(paused ? "Unpause" : "Pause", paused ? "unpause" : "pause", [])}
+            style={{
+              padding: "14px 28px", borderRadius: 14, fontSize: 14, fontWeight: 800, fontFamily: "monospace",
+              cursor: loading === "pause" ? "not-allowed" : "pointer", transition: "all 0.2s",
+              background: paused ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.1)",
+              border: paused ? "1px solid rgba(22,163,74,0.3)" : "1px solid rgba(220,38,38,0.3)",
+              color: paused ? "#16a34a" : "#DC2626",
+              minWidth: 140,
+            }}
+          >
+            {loading === "pause" ? "Sending..." : paused ? "▶️ Unpause" : "⏸️ Pause"}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Transfer Ownership ── */}
+      <div style={{ ...cardStyle, borderColor: "rgba(220,38,38,0.2)", background: "rgba(220,38,38,0.02)" }}>
+        <p style={{ ...labelStyle, color: "#DC2626" }}>⚠️ Transfer Ownership</p>
+        <p style={subStyle}>
+          Transfer admin control to a new wallet. <strong style={{ color: "#DC2626" }}>This is irreversible</strong> — you will lose all admin access.<br/>
+          Current owner: <span style={{ color: "#7C3AED", fontWeight: 600 }}>{ownerAddr ? `${ownerAddr.slice(0, 10)}...${ownerAddr.slice(-6)}` : "Loading..."}</span>
+        </p>
+        <div style={{ display: "flex", gap: 10 }}>
+          <input
+            type="text" placeholder="0x... new owner address" value={newOwnerInput}
+            onChange={e => setNewOwnerInput(e.target.value)}
+            onFocus={e => e.target.style.borderColor = "#DC2626"}
+            onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+            style={{ ...inputStyle, flex: 1, borderColor: "rgba(220,38,38,0.2)" }}
+          />
+          <button
+            disabled={!newOwnerInput || loading === "owner" || !/^0x[a-fA-F0-9]{40}$/.test(newOwnerInput)}
+            onClick={() => {
+              if (confirm("⚠️ ARE YOU SURE? You will permanently lose admin access to this contract. This cannot be undone.")) {
+                execTx("Ownership Transfer", "transferOwnership", [newOwnerInput as `0x${string}`]);
+              }
+            }}
+            style={btnStyle("#DC2626", !newOwnerInput || loading === "owner" || !/^0x[a-fA-F0-9]{40}$/.test(newOwnerInput))}
+          >
+            {loading === "owner" ? "Sending..." : "Transfer"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ────────────────────────────────────────────────────────
 export default function AdminPage() {
   const account = useActiveAccount();
@@ -504,16 +692,9 @@ export default function AdminPage() {
         )}
 
         {activeTab === "settings" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ maxWidth: 600 }}>
-            <h2 style={{ fontSize: 20, color: "#111827", marginBottom: 24, fontFamily: "var(--font-space-grotesk,sans-serif)", fontWeight: 800 }}>Platform Settings</h2>
-            <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 24, padding: 32, boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}>
-              <p style={{ color: "#6b7280", fontSize: 14, fontFamily: "monospace", margin: "0 0 24px", lineHeight: 1.6 }}>
-                These settings require the Admin (Owner) wallet to execute. Future updates will add UI controls for min-seed and emergency pause.
-              </p>
-              <div style={{ padding: 20, background: "#f9fafb", borderRadius: 16, border: "1px dashed #e5e7eb" }}>
-                 <p style={{ margin: 0, color: "#9ca3af", fontSize: 13, fontFamily: "monospace", lineHeight: 1.5 }}>Coming soon: Update Treasury Address, Set Min Seed Amount, Emergency Pause/Unpause.</p>
-              </div>
-            </div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ maxWidth: 700 }}>
+            <h2 style={{ fontSize: 20, color: "#111827", marginBottom: 28, fontFamily: "var(--font-space-grotesk,sans-serif)", fontWeight: 800 }}>Platform Settings</h2>
+            <SettingsPanel contract={contract} sendTx={sendTx} setTxMsg={setTxMsg} />
           </motion.div>
         )}
 
