@@ -71,63 +71,67 @@ export default function DashboardPage() {
     
     let active = true;
     async function fetchMarkets() {
+      setBets([]);
       setLoadingMarkets(true);
       try {
         const localContract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS!, abi: PREDICTION_MARKET_ABI as any });
-
-        // Step 1: Fetch ALL market data in parallel
         const marketIds = Array.from({ length: totalMarkets }, (_, i) => totalMarkets - 1 - i);
-        const allMarketData = await Promise.all(
-          marketIds.map(i => readContract({ contract: localContract, method: "getMarket", params: [BigInt(i)] }))
-        );
+        const BATCH = 5;
 
-        // Step 2: Fetch ALL user wagers + claim status in parallel
-        const allUserData = await Promise.all(
-          marketIds.map((i, idx) => {
-            const md = allMarketData[idx] as any;
-            const calls: Promise<any>[] = [
-              readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 0] }),
-              readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 1] }),
-              readContract({ contract: localContract, method: "hasClaimed", params: [BigInt(i), account!.address] }),
-              readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), account!.address] }),
-            ];
-            // For invalidated markets, also check seed penalty
-            if (Number(md.status) === 3) {
-              calls.push(readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), "0x0000000000000000000000000000000000000000"] }).catch(() => false));
-            } else {
-              calls.push(Promise.resolve(false));
+        // Process in small batches to avoid RPC throttling, stream results progressively
+        for (let start = 0; start < marketIds.length; start += BATCH) {
+          if (!active) return;
+          const chunk = marketIds.slice(start, start + BATCH);
+
+          // Fetch market data + user data for this chunk in one parallel burst
+          const chunkResults = await Promise.all(
+            chunk.map(async (i) => {
+              const [marketData, yesAmt, noAmt, claimed, refunded] = await Promise.all([
+                readContract({ contract: localContract, method: "getMarket", params: [BigInt(i)] }),
+                readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 0] }),
+                readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 1] }),
+                readContract({ contract: localContract, method: "hasClaimed", params: [BigInt(i), account!.address] }),
+                readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), account!.address] }),
+              ]);
+              const md = marketData as any;
+              let seedPenalized = false;
+              if (Number(md.status) === 3) {
+                try { seedPenalized = await readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), "0x0000000000000000000000000000000000000000"] }) as boolean; } catch {}
+              }
+              return { i, md, yesAmt: yesAmt as bigint, noAmt: noAmt as bigint, claimed: claimed as boolean, refunded: refunded as boolean, seedPenalized };
+            })
+          );
+
+          if (!active) return;
+
+          // Stream this batch into state immediately
+          const batchBets: UserBet[] = [];
+          for (const r of chunkResults) {
+            const isCreator = r.md.creator.toLowerCase() === account!.address.toLowerCase();
+            if (r.yesAmt > 0n || r.noAmt > 0n || isCreator) {
+              batchBets.push({
+                marketId: r.i,
+                question: r.md.question,
+                category: r.md.category,
+                status: Number(r.md.status),
+                correctOptionIndex: Number(r.md.correctOptionIndex),
+                deadline: Number(r.md.deadline),
+                betOnYes: r.yesAmt,
+                betOnNo: r.noAmt,
+                hasClaimed: r.claimed,
+                hasRefunded: r.refunded,
+                isCreator,
+                creatorSeedAmount: r.md.creatorSeedAmount as bigint,
+                seedPenalized: r.seedPenalized,
+              });
             }
-            return Promise.all(calls);
-          })
-        );
-
-        // Step 3: Assemble results
-        const userActivity: UserBet[] = [];
-        for (let idx = 0; idx < marketIds.length; idx++) {
-          const i = marketIds[idx];
-          const marketData = allMarketData[idx] as any;
-          const [yesAmt, noAmt, claimed, refunded, seedPenalized] = allUserData[idx];
-          const isCreator = marketData.creator.toLowerCase() === account!.address.toLowerCase();
-
-          if (yesAmt > 0n || noAmt > 0n || isCreator) {
-            userActivity.push({
-              marketId: i,
-              question: marketData.question,
-              category: marketData.category,
-              status: Number(marketData.status),
-              correctOptionIndex: Number(marketData.correctOptionIndex),
-              deadline: Number(marketData.deadline),
-              betOnYes: yesAmt as bigint,
-              betOnNo: noAmt as bigint,
-              hasClaimed: claimed as boolean,
-              hasRefunded: refunded as boolean,
-              isCreator,
-              creatorSeedAmount: marketData.creatorSeedAmount as bigint,
-              seedPenalized: seedPenalized as boolean,
-            });
           }
+          if (batchBets.length > 0) {
+            setBets(prev => [...prev, ...batchBets]);
+          }
+          // After first batch loads, hide spinner
+          if (start === 0) setLoadingMarkets(false);
         }
-        if (active) setBets(userActivity);
       } catch (err) {
         console.error("Failed to load markets", err);
       } finally {
