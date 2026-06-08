@@ -122,7 +122,7 @@ export default function BetPage({ params }: { params: Promise<{ id: string }> })
   const deadlinePassed = Date.now() / 1000 > Number(bet.deadline);
 
   return (
-    <div className="page" style={{ background: "#ffffff", minHeight: "100vh", padding: "80px 24px" }}>
+    <div className="page bet-detail-page" style={{ background: "#ffffff", minHeight: "100vh", padding: "80px 16px" }}>
       <div className="container" style={{ maxWidth: "580px", margin: "0 auto" }}>
         {/* Header */}
         <div style={{ marginBottom: "1.5rem" }} className="animate-fade-in">
@@ -153,7 +153,7 @@ export default function BetPage({ params }: { params: Promise<{ id: string }> })
           </div>
 
           {/* Details grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div className="bet-detail-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
             {[
               {
                 icon: <DollarSign size={16} color="#16a34a" />,
@@ -206,7 +206,7 @@ export default function BetPage({ params }: { params: Promise<{ id: string }> })
                   {item.icon}
                   {item.label}
                 </div>
-                <div style={{ fontWeight: item.bold ? 700 : 500, color: item.color, fontFamily: "monospace", fontSize: 15 }}>
+                <div style={{ fontWeight: item.bold ? 700 : 500, color: item.color, fontFamily: "monospace", fontSize: 14, wordBreak: "break-all" as any }}>
                   {item.value}
                 </div>
               </div>
@@ -217,13 +217,11 @@ export default function BetPage({ params }: { params: Promise<{ id: string }> })
           {bet.status !== BetStatus.Open && (
             <div style={{ marginTop: "1.5rem" }}>
               <div className="divider" style={{ height: 1, background: "#e5e7eb", width: "100%", margin: "0 0 1rem" }} />
-              <div
-                style={{
+              <div className="bet-detail-grid" style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: "0.75rem",
-                }}
-              >
+                }}>
                 <div
                   style={{
                     background: "rgba(124,58,237,0.05)",
@@ -363,6 +361,13 @@ export default function BetPage({ params }: { params: Promise<{ id: string }> })
           </div>
         )}
       </div>
+
+      <style>{`
+        @media (max-width: 500px) {
+          .bet-detail-grid { grid-template-columns: 1fr !important; }
+          .bet-detail-page .container { padding: 0 !important; }
+        }
+      `}</style>
     </div>
   );
 }

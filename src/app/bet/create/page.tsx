@@ -132,7 +132,7 @@ export default function CreateBetPage() {
   }
 
   return (
-    <div className="page" style={{ background: "#ffffff", minHeight: "100vh", padding: "80px 24px" }}>
+    <div className="page" style={{ background: "#ffffff", minHeight: "100vh", padding: "80px 16px" }}>
       <div
         className="container"
         style={{
@@ -250,7 +250,7 @@ export default function CreateBetPage() {
                 placeholder="0x..."
                 value={judge}
                 onChange={(e) => setJudge(e.target.value.trim())}
-                style={{ width: "100%", padding: 16, borderRadius: 12, border: "1px solid #e5e7eb", background: "#f9fafb", color: "#111827", fontFamily: "monospace", outline: "none", transition: "border-color 0.2s" }}
+                style={{ width: "100%", padding: 16, borderRadius: 12, border: "1px solid #e5e7eb", background: "#f9fafb", color: "#111827", fontFamily: "monospace", outline: "none", transition: "border-color 0.2s", boxSizing: "border-box", fontSize: 13, wordBreak: "break-all" as any }}
                 onFocus={e => e.target.style.borderColor = "#7C3AED"}
                 onBlur={e => e.target.style.borderColor = "#e5e7eb"}
               />
