@@ -184,27 +184,47 @@ function Skeleton() {
 // ─── Fetch Hook ──────────────────────────────────────────────────
 function usePaginatedMarkets(totalMarkets: number, visibleCount: number) {
   const [results, setResults] = useState<{ data: any; id: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (totalMarkets <= 0) { setResults([]); return; }
+    if (totalMarkets <= 0) { setResults([]); setLoading(false); return; }
     let active = true;
     async function load() {
+      setLoading(true);
       const contract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS!, abi: PREDICTION_MARKET_ABI as any });
       const startId = totalMarkets - 1;
       const limit = Math.min(visibleCount, totalMarkets);
-      const promises = Array.from({ length: limit }, (_, i) =>
-        readContract({ contract, method: "getMarket", params: [BigInt(startId - i)] })
-      );
-      try {
-        const res = await Promise.all(promises);
-        if (active) setResults(res.map((data, idx) => ({ data, id: startId - idx })));
-      } catch (err) { console.error(err); }
+      const ids = Array.from({ length: limit }, (_, i) => startId - i);
+
+      // Batch in groups of 5 to avoid RPC throttling
+      const all: { data: any; id: number }[] = [];
+      for (let i = 0; i < ids.length; i += 5) {
+        if (!active) return;
+        const chunk = ids.slice(i, i + 5);
+        const settled = await Promise.allSettled(
+          chunk.map(id => readContract({ contract, method: "getMarket", params: [BigInt(id)] }))
+        );
+        for (let j = 0; j < settled.length; j++) {
+          if (settled[j].status === "fulfilled") {
+            all.push({ data: (settled[j] as PromiseFulfilledResult<any>).value, id: chunk[j] });
+          }
+        }
+        // Stream results progressively
+        if (active && all.length > 0) {
+          setResults([...all]);
+          setLoading(false);
+        }
+      }
+      if (active) {
+        setResults([...all]);
+        setLoading(false);
+      }
     }
     load();
     return () => { active = false; };
   }, [totalMarkets, visibleCount]);
 
-  return results;
+  return { results, loading };
 }
 
 // ─── Page ────────────────────────────────────────────────────────
@@ -218,13 +238,11 @@ export default function MarketsPage() {
   const contract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS!, abi: PREDICTION_MARKET_ABI as any });
   const { data: countData } = useReadContract({ contract, method: "nextMarketId", params: [] } as any);
   const count = Number(countData ?? 0n);
-  const marketResults = usePaginatedMarkets(count, visibleCount);
+  const { results: marketResults, loading } = usePaginatedMarkets(count, visibleCount);
 
   const rawMarkets: MarketData[] = marketResults
     .map(r => r.data ? { ...r.data, id: r.id } : null)
     .filter(Boolean) as MarketData[];
-
-  const loading = count > 0 && rawMarkets.length < Math.min(visibleCount, count);
 
   const markets = useMemo(() => {
     let list = rawMarkets.filter(m => m.status !== 3);
