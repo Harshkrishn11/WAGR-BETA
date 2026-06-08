@@ -89,6 +89,12 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
   const statusColor = STATUS_COLORS[market.status];
 
   async function doAction(type: string, param?: any) {
+    if (type === "invalidate_penalty") {
+      if (!window.confirm(`⚠️ FORFEIT SEED\n\nThis will invalidate market #${market.id} and send the creator's seed ($${Number(market.creatorSeedAmount ?? 0) / 1e6}) to the treasury as a penalty.\n\nThe creator will NOT get the seed back.\n\nAre you sure?`)) return;
+    }
+    if (type === "invalidate_goodfaith") {
+      if (!window.confirm(`Invalidate market #${market.id} and REFUND the creator's seed ($${Number(market.creatorSeedAmount ?? 0) / 1e6}) back to them?\n\nAll bettors will also be able to claim full refunds.`)) return;
+    }
     setPendingAction(type);
     try { await onAction(type, market.id, param); }
     finally { setPendingAction(null); }
