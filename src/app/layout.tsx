@@ -8,8 +8,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 
 export const metadata: Metadata = {
-  title: "WAGR — Prove It. Win It.",
+  title: "WAGR | Prove It. Win It.",
   description: "The on-chain betting platform on Base. Play daily games, bet friends, and win USDC.",
+  icons: {
+    icon: "/wagr-logo.png",
+    apple: "/wagr-logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
