@@ -209,19 +209,19 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
                 {/* Invalidate — active or resolved markets */}
                 {(isActive || isResolved) && (
                   <>
+                    <button disabled={!!pendingAction} onClick={() => doAction("invalidate_goodfaith")}
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.3)", color: "#2563EB",
+                        opacity: pendingAction ? 0.5 : 1 }}>
+                      <AlertTriangle size={14} /> Invalidate & Refund Seed to Creator
+                    </button>
                     <button disabled={!!pendingAction} onClick={() => doAction("invalidate_penalty")}
                       style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
                         fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
                         background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", color: "#DC2626",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <AlertTriangle size={14} /> Invalidate (Keep Seed)
-                    </button>
-                    <button disabled={!!pendingAction} onClick={() => doAction("invalidate_goodfaith")}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.2)", color: "#ef4444",
-                        opacity: pendingAction ? 0.5 : 1 }}>
-                      <AlertTriangle size={14} /> Invalidate (Refund Seed)
+                      <AlertTriangle size={14} /> Invalidate & Forfeit Seed (Penalty)
                     </button>
                   </>
                 )}
