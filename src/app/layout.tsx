@@ -18,8 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${inter.variable} ${spaceGrotesk.variable}`}
         style={{
-          background: "#0B0B13",
-          color: "#f5f5f5",
+          background: "#FFFFFF",
+          color: "#111827",
           fontFamily: "var(--font-inter), sans-serif",
           margin: 0,
           padding: 0,
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}
       >
         <ThirdwebProvider>
-          {/* Global radial background — fixed behind everything */}
+          {/* Subtle light background accent */}
           <div
             aria-hidden
             style={{
@@ -35,14 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               inset: 0,
               zIndex: 0,
               background:
-                "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(155,92,255,0.14) 0%, transparent 60%)," +
-                "radial-gradient(ellipse 60% 50% at 80% 90%, rgba(0,212,255,0.07) 0%, transparent 60%)," +
-                "#0B0B13",
+                "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.06) 0%, transparent 60%)," +
+                "#FFFFFF",
               pointerEvents: "none",
             }}
           />
 
-          {/* Site wrapper — stacks header / main / footer */}
+          {/* Site wrapper */}
           <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
             <Header />
             <main style={{ flex: 1 }}>{children}</main>
@@ -52,11 +51,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="bottom-right"
             toastOptions={{
               style: {
-                background: "#18181b",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "#ffffff",
+                color: "#111827",
+                border: "1px solid rgba(0,0,0,0.08)",
                 borderRadius: "12px",
                 fontSize: "0.875rem",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
               },
             }}
           />

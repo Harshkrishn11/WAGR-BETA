@@ -33,7 +33,7 @@ function Countdown({ endTime }: { endTime: number }) {
   }, [endTime]);
   const f = (n: number) => String(n).padStart(2, "0");
   return (
-    <span style={{ fontFamily: "monospace", fontSize: 11, color: "#6B7280", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.08)" }}>
+    <span style={{ fontFamily: "monospace", fontSize: 11, color: "#6B7280", background: "rgba(0,0,0,0.04)", padding: "2px 8px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.08)" }}>
       {f(t.h)}:{f(t.m)}:{f(t.s)}
     </span>
   );
@@ -47,7 +47,7 @@ function MarketCard({ marketId, index }: { marketId: number; index: number }) {
   const { data: noPool } = useReadContract({ contract: contract ?? undefined, method: "getOptionPool", params: [BigInt(marketId), 1], queryOptions: { enabled: !!contract } } as any);
   const router = useRouter();
 
-  if (isLoading) return <div style={{ height: 200, borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", animation: "pulse 2s infinite" }} />;
+  if (isLoading) return <div style={{ height: 200, borderRadius: 16, background: "#f9fafb", border: "1px solid rgba(0,0,0,0.06)", animation: "pulse 2s infinite" }} />;
   if (!data) return null;
 
   const { question, category, deadline: endTime, status, totalPool } = data as any;
@@ -68,23 +68,26 @@ function MarketCard({ marketId, index }: { marketId: number; index: number }) {
       onClick={() => router.push(`/markets/${marketId}`)}
       style={{
         borderRadius: 16,
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "#ffffff",
+        border: "1px solid rgba(0,0,0,0.08)",
         padding: 24,
         display: "flex",
         flexDirection: "column",
         gap: 16,
         cursor: "pointer",
-        transition: "border-color 0.2s, background 0.2s",
+        transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
       }}
       whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.4)";
-        (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.04)";
+        (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.02)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(124,58,237,0.12)";
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)";
-        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)";
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,0,0,0.08)";
+        (e.currentTarget as HTMLElement).style.background = "#ffffff";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)";
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -92,54 +95,24 @@ function MarketCard({ marketId, index }: { marketId: number; index: number }) {
         {isActive ? <Countdown endTime={Number(endTime)} /> : <span style={{ fontSize: 10, color: "#6B7280", fontFamily: "monospace" }}>SETTLED</span>}
       </div>
 
-      <p style={{ fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.85)", lineHeight: 1.6, margin: 0 }}>{question}</p>
+      <p style={{ fontSize: 15, fontWeight: 500, color: "#111827", lineHeight: 1.6, margin: 0 }}>{question}</p>
 
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: "#10B981" }}>YES {yP}%</span>
           <span style={{ fontSize: 12, fontWeight: 600, color: "#EF4444" }}>NO {100 - yP}%</span>
         </div>
-        <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 99, overflow: "hidden", display: "flex" }}>
+        <div style={{ height: 4, background: "rgba(0,0,0,0.06)", borderRadius: 99, overflow: "hidden", display: "flex" }}>
           <div style={{ width: `${yP}%`, background: "#10B981", transition: "width 0.8s ease" }} />
           <div style={{ width: `${100 - yP}%`, background: "#EF4444" }} />
         </div>
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 12, color: "#6B7280" }}>Pool: <strong style={{ color: "rgba(255,255,255,0.6)" }}>${total.toLocaleString("en-US", { maximumFractionDigits: 2 })}</strong></span>
+        <span style={{ fontSize: 12, color: "#6B7280" }}>Pool: <strong style={{ color: "#111827" }}>${total.toLocaleString("en-US", { maximumFractionDigits: 2 })}</strong></span>
         <span style={{ fontSize: 12, fontWeight: 600, color: "#7C3AED", display: "flex", alignItems: "center", gap: 4 }}>Predict <ArrowRight size={11} /></span>
       </div>
     </motion.div>
-  );
-}
-
-/* ─── Live Ticker ──────────────────────────────────────────────── */
-const TICKERS = [
-  { q: "Will BTC hit $150k in 2025?", yes: 74 }, { q: "ETH ETF approved?", yes: 58 },
-  { q: "India wins T20 World Cup?", yes: 41 }, { q: "Tesla $500 by Dec?", yes: 33 },
-  { q: "Fed cuts rates in Sep?", yes: 67 }, { q: "GPT-5 released in 2025?", yes: 82 },
-];
-
-function LiveTicker() {
-  const all = [...TICKERS, ...TICKERS, ...TICKERS];
-  return (
-    <div style={{ overflow: "hidden", position: "relative", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.3)", padding: "10px 0" }}>
-      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 80, background: "linear-gradient(90deg,#06060F,transparent)", zIndex: 2, pointerEvents: "none" }} />
-      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 80, background: "linear-gradient(-90deg,#06060F,transparent)", zIndex: 2, pointerEvents: "none" }} />
-      <motion.div animate={{ x: ["0%", "-33.33%"] }} transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-        style={{ display: "flex", alignItems: "center", whiteSpace: "nowrap" }}>
-        {all.map((t, i) => {
-          const clr = t.yes >= 50 ? "#10B981" : "#EF4444";
-          return (
-            <div key={i} style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "0 32px", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: clr, display: "block", flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{t.q}</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: clr, fontFamily: "monospace" }}>{t.yes}%</span>
-            </div>
-          );
-        })}
-      </motion.div>
-    </div>
   );
 }
 
@@ -152,8 +125,8 @@ function Hero() {
   return (
     <section className="hero-section" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", padding: "100px 0 60px", overflow: "hidden" }}>
       {/* Background accent */}
-      <div style={{ position: "absolute", top: 0, right: 0, width: "50%", height: "100%", background: "radial-gradient(ellipse 80% 60% at 80% 40%, rgba(124,58,237,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.05)" }} />
+      <div style={{ position: "absolute", top: 0, right: 0, width: "50%", height: "100%", background: "radial-gradient(ellipse 80% 60% at 80% 40%, rgba(124,58,237,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "rgba(0,0,0,0.06)" }} />
 
       {W(
         <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center", position: "relative", zIndex: 2 }}>
@@ -169,7 +142,7 @@ function Hero() {
 
             {/* Headline — left-aligned, bold, single color */}
             <motion.h1 {...fadeUp} transition={{ duration: 0.5, delay: 0.08 }}
-              style={{ fontSize: "clamp(2.6rem,5vw,4.2rem)", fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.045em", fontFamily: "var(--font-space-grotesk,sans-serif)", margin: "0 0 22px", color: "#fff" }}>
+              style={{ fontSize: "clamp(2.6rem,5vw,4.2rem)", fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.045em", fontFamily: "var(--font-space-grotesk,sans-serif)", margin: "0 0 22px", color: "#111827" }}>
               The smarter way<br />
               to bet on<br />
               <span style={{ color: "#7C3AED" }}>what you know.</span>
@@ -177,7 +150,7 @@ function Hero() {
 
             {/* Description */}
             <motion.p {...fadeUp} transition={{ duration: 0.5, delay: 0.16 }}
-              style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", lineHeight: 1.75, margin: "0 0 36px", maxWidth: 420 }}>
+              style={{ fontSize: 16, color: "#6b7280", lineHeight: 1.75, margin: "0 0 36px", maxWidth: 420 }}>
               WAGR lets you create prediction markets on any topic and earn USDC when your call is right. No middlemen. Smart contracts handle everything.
             </motion.p>
 
@@ -196,9 +169,9 @@ function Hero() {
                   Browse Markets <ArrowRight size={15} />
                 </button>
               </Link>
-              <Link href="/create" style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.5)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6, transition: "color 0.2s" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.5)"; }}>
+              <Link href="/create" style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", textDecoration: "none", display: "flex", alignItems: "center", gap: 6, transition: "color 0.2s" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#111827"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "#6b7280"; }}>
                 Create a market <ArrowRight size={13} />
               </Link>
             </motion.div>
@@ -208,12 +181,12 @@ function Hero() {
               style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
               {[
                 { value: String(count), label: "Active Markets", color: "#7C3AED" },
-                { value: "1%", label: "Platform Fee", color: "rgba(255,255,255,0.6)" },
+                { value: "1%", label: "Platform Fee", color: "#4b5563" },
                 { value: "Base", label: "Network", color: "#2563EB" },
               ].map(s => (
                 <div key={s.label} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <span style={{ fontSize: 22, fontWeight: 800, fontFamily: "monospace", color: s.color, lineHeight: 1 }}>{s.value}</span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "monospace" }}>{s.label}</span>
+                  <span style={{ fontSize: 11, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "monospace" }}>{s.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -228,16 +201,16 @@ function Hero() {
             style={{ position: "relative" }}>
 
             {/* Main card */}
-            <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.09)", padding: 28, backdropFilter: "blur(8px)" }}>
+            <div style={{ borderRadius: 20, background: "#ffffff", border: "1px solid rgba(0,0,0,0.09)", padding: 28, backdropFilter: "blur(8px)", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
               {/* Card header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 6, background: "rgba(37,99,235,0.15)", color: "#60A5FA", border: "1px solid rgba(37,99,235,0.25)" }}>Crypto</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 6, background: "rgba(37,99,235,0.12)", color: "#2563EB", border: "1px solid rgba(37,99,235,0.2)" }}>Crypto</span>
                 </div>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "monospace" }}>Closes in 12d 4h</span>
+                <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: "monospace" }}>Closes in 12d 4h</span>
               </div>
 
-              <p style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.88)", lineHeight: 1.5, margin: "0 0 22px" }}>
+              <p style={{ fontSize: 16, fontWeight: 600, color: "#111827", lineHeight: 1.5, margin: "0 0 22px" }}>
                 Will BTC hit $150,000 before end of 2026?
               </p>
 
@@ -253,7 +226,7 @@ function Hero() {
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#EF4444" }}>NO</span>
                   </div>
                 </div>
-                <div style={{ height: 6, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden", display: "flex" }}>
+                <div style={{ height: 6, borderRadius: 99, background: "rgba(0,0,0,0.06)", overflow: "hidden", display: "flex" }}>
                   <motion.div
                     initial={{ width: 0 }} animate={{ width: "72%" }}
                     transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
@@ -276,20 +249,20 @@ function Hero() {
               </div>
 
               {/* Footer */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Pool: <strong style={{ color: "rgba(255,255,255,0.55)" }}>$2,400</strong></span>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>248 predictors</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                <span style={{ fontSize: 12, color: "#9ca3af", fontFamily: "monospace" }}>Pool: <strong style={{ color: "#374151" }}>$2,400</strong></span>
+                <span style={{ fontSize: 12, color: "#9ca3af", fontFamily: "monospace" }}>248 predictors</span>
               </div>
             </div>
 
             {/* Small floating tag below */}
-            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderRadius: 12, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(124,58,237,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderRadius: 12, background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <Shield size={14} color="#7C3AED" />
               </div>
               <div>
-                <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>Smart Contract Secured</p>
-                <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.28)" }}>Funds locked on-chain until resolution</p>
+                <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#374151" }}>Smart Contract Secured</p>
+                <p style={{ margin: 0, fontSize: 11, color: "#9ca3af" }}>Funds locked on-chain until resolution</p>
               </div>
             </div>
           </motion.div>
@@ -323,7 +296,7 @@ function TrendingMarkets() {
           style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40, flexWrap: "wrap", gap: 16 }}>
           <div>
             <p style={{ fontSize: 12, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "#7C3AED", fontWeight: 700, marginBottom: 8 }}>Live Markets</p>
-            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#fff", margin: 0, fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
+            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#111827", margin: 0, fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
               Trending Now
             </h2>
           </div>
@@ -341,8 +314,8 @@ function TrendingMarkets() {
             {ids.map((id, i) => <MarketCard key={id} marketId={id} index={i} />)}
           </div>
         ) : (
-          <div style={{ textAlign: "center", padding: "60px 0", borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
-            <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: "monospace", fontSize: 13 }}>No markets yet. Be the first to create one.</p>
+          <div style={{ textAlign: "center", padding: "60px 0", borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "#fafafa" }}>
+            <p style={{ color: "#9ca3af", fontFamily: "monospace", fontSize: 13 }}>No markets yet. Be the first to create one.</p>
           </div>
         )}
       </>)}
@@ -359,27 +332,27 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section style={{ padding: "80px 0", position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+    <section style={{ padding: "80px 0", position: "relative", zIndex: 1, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
       {W(<>
         <motion.div {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           style={{ textAlign: "center", marginBottom: 56 }}>
           <p style={{ fontSize: 12, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "#7C3AED", fontWeight: 700, marginBottom: 12 }}>How It Works</p>
-          <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#fff", margin: "0 0 12px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
+          <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#111827", margin: "0 0 12px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
             Three Steps to Win
           </h2>
-          <p style={{ fontSize: 15, color: "rgba(255,255,255,0.35)", maxWidth: 380, margin: "0 auto" }}>No middlemen. No trust. Pure math.</p>
+          <p style={{ fontSize: 15, color: "#6b7280", maxWidth: 380, margin: "0 auto" }}>No middlemen. No trust. Pure math.</p>
         </motion.div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))", gap: 20 }}>
           {STEPS.map((s, i) => (
             <motion.div key={i} {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-              style={{ padding: 28, borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", position: "relative" }}>
-              <div style={{ position: "absolute", top: 20, right: 20, fontSize: 32, fontWeight: 900, fontFamily: "monospace", color: "rgba(255,255,255,0.04)" }}>{s.num}</div>
+              style={{ padding: 28, borderRadius: 16, background: "#ffffff", border: "1px solid rgba(0,0,0,0.07)", position: "relative", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ position: "absolute", top: 20, right: 20, fontSize: 32, fontWeight: 900, fontFamily: "monospace", color: "rgba(0,0,0,0.06)" }}>{s.num}</div>
               <div style={{ width: 44, height: 44, borderRadius: 12, background: `${s.color}14`, border: `1px solid ${s.color}28`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
                 <s.Icon size={20} color={s.color} />
               </div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, color: "#fff", margin: "0 0 10px", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>{s.title}</h3>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, margin: 0 }}>{s.desc}</p>
+              <h3 style={{ fontSize: 17, fontWeight: 700, color: "#111827", margin: "0 0 10px", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>{s.title}</h3>
+              <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{s.desc}</p>
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: s.color, borderRadius: "0 0 16px 16px", opacity: 0.5 }} />
             </motion.div>
           ))}
@@ -401,29 +374,29 @@ const FEATS = [
 
 function Features() {
   return (
-    <section style={{ padding: "80px 0", position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+    <section style={{ padding: "80px 0", position: "relative", zIndex: 1, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
       {W(<>
         <motion.div {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           style={{ textAlign: "center", marginBottom: 56 }}>
           <p style={{ fontSize: 12, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "#7C3AED", fontWeight: 700, marginBottom: 12 }}>Why WAGR</p>
-          <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#fff", margin: "0 0 12px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
+          <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#111827", margin: "0 0 12px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.03em" }}>
             Built Different
           </h2>
-          <p style={{ fontSize: 15, color: "rgba(255,255,255,0.35)", maxWidth: 380, margin: "0 auto" }}>Every feature designed to eliminate trust and maximize fairness.</p>
+          <p style={{ fontSize: 15, color: "#6b7280", maxWidth: 380, margin: "0 auto" }}>Every feature designed to eliminate trust and maximize fairness.</p>
         </motion.div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))", gap: 16 }}>
           {FEATS.map((f, i) => (
             <motion.div key={i} {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.07 }}
-              style={{ padding: 24, borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", gap: 14, transition: "border-color 0.2s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.3)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}>
+              style={{ padding: 24, borderRadius: 16, background: "#ffffff", border: "1px solid rgba(0,0,0,0.07)", display: "flex", flexDirection: "column", gap: 14, transition: "border-color 0.2s, box-shadow 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.3)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(124,58,237,0.1)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,0,0,0.07)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)"; }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <f.Icon size={18} color="#7C3AED" />
               </div>
               <div>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: "0 0 6px", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>{f.title}</h3>
-                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111827", margin: "0 0 6px", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>{f.title}</h3>
+                <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -436,12 +409,12 @@ function Features() {
 /* ─── CTA ──────────────────────────────────────────────────────── */
 function CTA() {
   return (
-    <section style={{ padding: "80px 0 120px", position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+    <section style={{ padding: "80px 0 120px", position: "relative", zIndex: 1, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
       {W(
         <motion.div {...fadeUp} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="cta-card"
           style={{ padding: "56px 48px", borderRadius: 24, position: "relative", overflow: "hidden", background: "rgba(124,58,237,0.04)", border: "1px solid rgba(124,58,237,0.18)" }}>
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,58,237,0.1), transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,58,237,0.07), transparent)", pointerEvents: "none" }} />
           <div className="cta-container" style={{ position: "relative" }}>
             
             {/* Left Column */}
@@ -450,10 +423,10 @@ function CTA() {
                 <TrendingUp size={12} color="#A78BFA" />
                 <span>Put your conviction to the test</span>
               </div>
-              <h2 style={{ fontSize: "clamp(2rem,4.2vw,3rem)", fontWeight: 900, color: "#fff", margin: "0 0 16px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.04em", lineHeight: 1.15 }}>
+              <h2 style={{ fontSize: "clamp(2rem,4.2vw,3rem)", fontWeight: 900, color: "#111827", margin: "0 0 16px", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.04em", lineHeight: 1.15 }}>
                 Predict the future,<br />Get paid instantly.
               </h2>
-              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 0 32px", lineHeight: 1.7 }}>
+              <p style={{ fontSize: 15, color: "#6b7280", maxWidth: 480, margin: "0 0 32px", lineHeight: 1.7 }}>
                 Connect your wallet, browse active markets on Base, and trade prediction shares on sports, crypto, and macro events. Smart contracts handle everything automatically.
               </p>
               <div className="cta-buttons" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -472,19 +445,19 @@ function CTA() {
                 <Link href="/bet/create">
                   <button style={{
                     padding: "14px 32px", borderRadius: 12, fontWeight: 600, fontSize: 14,
-                    color: "rgba(255,255,255,0.65)", background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer",
+                    color: "#4b5563", background: "rgba(0,0,0,0.04)",
+                    border: "1px solid rgba(0,0,0,0.12)", cursor: "pointer",
                     transition: "all 0.2s"
                   }}
                     onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.color = "#fff";
+                      (e.currentTarget as HTMLElement).style.color = "#111827";
                       (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.4)";
                       (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.04)";
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.65)";
-                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
+                      (e.currentTarget as HTMLElement).style.color = "#4b5563";
+                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,0,0,0.12)";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.04)";
                     }}
                   >
                     Bet a Friend
@@ -505,10 +478,10 @@ function CTA() {
                   width: 250,
                   padding: 18,
                   borderRadius: 16,
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)",
-                  border: "1px solid rgba(255,255,255,0.09)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(0,0,0,0.08)",
                   backdropFilter: "blur(12px)",
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.10)",
                   left: "0%",
                   top: "0%",
                   zIndex: 2,
@@ -516,16 +489,16 @@ function CTA() {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "2px 6px", borderRadius: 4, background: "rgba(124,58,237,0.15)", color: "#C084FC", border: "1px solid rgba(124,58,237,0.25)" }}>Crypto</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "2px 6px", borderRadius: 4, background: "rgba(124,58,237,0.1)", color: "#7C3AED", border: "1px solid rgba(124,58,237,0.2)" }}>Crypto</span>
                   <span style={{ fontSize: 10, color: "#10B981", fontWeight: 700, display: "flex", alignItems: "center", gap: 3 }}>
                     <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981" }} />
                     +180.00 USDC
                   </span>
                 </div>
-                <p style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>Will BTC cross $100k in 2025?</p>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
+                <p style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 600, color: "#111827" }}>Will BTC cross $100k in 2025?</p>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#9ca3af" }}>
                   <span>Position: <strong style={{ color: "#10B981" }}>YES</strong></span>
-                  <span>Tx: <span style={{ fontFamily: "monospace", color: "rgba(255,255,255,0.45)" }}>0x9a2f...</span></span>
+                  <span>Tx: <span style={{ fontFamily: "monospace", color: "#4b5563" }}>0x9a2f...</span></span>
                 </div>
               </motion.div>
 
@@ -539,10 +512,10 @@ function CTA() {
                   width: 240,
                   padding: 16,
                   borderRadius: 16,
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(0,0,0,0.07)",
                   backdropFilter: "blur(8px)",
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                   right: "0%",
                   bottom: "0%",
                   zIndex: 1,
@@ -550,12 +523,12 @@ function CTA() {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "2px 6px", borderRadius: 4, background: "rgba(37,99,235,0.15)", color: "#60A5FA", border: "1px solid rgba(37,99,235,0.25)" }}>Macro</span>
-                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Closes 2d</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "2px 6px", borderRadius: 4, background: "rgba(37,99,235,0.1)", color: "#2563EB", border: "1px solid rgba(37,99,235,0.2)" }}>Macro</span>
+                  <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>Closes 2d</span>
                 </div>
-                <p style={{ margin: "0 0 12px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)" }}>Fed cuts interest rates in Sep?</p>
+                <p style={{ margin: "0 0 12px", fontSize: 12, fontWeight: 600, color: "#374151" }}>Fed cuts interest rates in Sep?</p>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>Option: <strong style={{ color: "#EF4444" }}>NO</strong></span>
+                  <span style={{ fontSize: 10, color: "#6b7280" }}>Option: <strong style={{ color: "#EF4444" }}>NO</strong></span>
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#EF4444" }}>74% Chance</span>
                 </div>
               </motion.div>
@@ -572,14 +545,8 @@ function CTA() {
 export default function Home() {
   return (
     <>
-      {/* Clean single-tone background — no animated blobs */}
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, background: "#06060F", pointerEvents: "none" }}>
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "50vh", background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(124,58,237,0.08) 0%, transparent 100%)" }} />
-      </div>
-
       <div style={{ position: "relative", zIndex: 1 }}>
         <Hero />
-        <LiveTicker />
         <TrendingMarkets />
         <HowItWorks />
         <Features />

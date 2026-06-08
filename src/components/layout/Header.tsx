@@ -59,10 +59,11 @@ export default function Header() {
         right: 0,
         zIndex: 1000,
         transition: "all 0.4s ease",
-        background: scrolled ? "rgba(6,6,16,0.92)" : "rgba(6,6,16,0.5)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.07)" : "1px solid transparent",
+        background: scrolled ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderBottom: scrolled ? "1px solid rgba(0,0,0,0.08)" : "1px solid rgba(0,0,0,0.04)",
+        boxShadow: scrolled ? "0 2px 16px rgba(0,0,0,0.06)" : "none",
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68, gap: 16 }}>
 
@@ -94,9 +95,9 @@ export default function Header() {
                     fontSize: 14,
                     fontWeight: 600,
                     textDecoration: "none",
-                    color: isActive ? "#fff" : "rgba(255,255,255,0.45)",
-                    background: isActive ? "rgba(255,255,255,0.07)" : "transparent",
-                    border: isActive ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
+                    color: isActive ? "#7C3AED" : "#4b5563",
+                    background: isActive ? "rgba(124,58,237,0.08)" : "transparent",
+                    border: isActive ? "1px solid rgba(124,58,237,0.15)" : "1px solid transparent",
                     transition: "all 0.2s ease",
                     display: "flex",
                     alignItems: "center",
@@ -104,13 +105,13 @@ export default function Header() {
                   }}
                   onMouseEnter={e => {
                     if (!isActive) {
-                      (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.8)";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
+                      (e.currentTarget as HTMLElement).style.color = "#111827";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.04)";
                     }
                   }}
                   onMouseLeave={e => {
                     if (!isActive) {
-                      (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)";
+                      (e.currentTarget as HTMLElement).style.color = "#4b5563";
                       (e.currentTarget as HTMLElement).style.background = "transparent";
                     }
                   }}
@@ -133,20 +134,20 @@ export default function Header() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="desktop-nav"
                 style={{
-                  background: "rgba(0,255,136,0.06)",
-                  border: "1px solid rgba(0,255,136,0.15)",
+                  background: "rgba(22,163,74,0.08)",
+                  border: "1px solid rgba(22,163,74,0.2)",
                   borderRadius: 10,
                   padding: "6px 14px",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: "#00FF88",
+                  color: "#16a34a",
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
                   fontFamily: "monospace",
                 }}
               >
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontWeight: 400 }}>USDC</span>
+                <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 400 }}>USDC</span>
                 {formatUSDC(usdcBalance)}
               </motion.div>
             )}
@@ -167,15 +168,15 @@ export default function Header() {
                   fontSize: "13px",
                   cursor: "pointer",
                   fontFamily: "inherit",
-                  boxShadow: "0 0 24px rgba(124,58,237,0.4)",
+                  boxShadow: "0 4px 16px rgba(124,58,237,0.3)",
                   letterSpacing: "0.01em",
                 },
               }}
               detailsButton={{
                 style: {
-                  background: "rgba(255,255,255,0.06)",
-                  color: "rgba(255,255,255,0.9)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(0,0,0,0.04)",
+                  color: "#111827",
+                  border: "1px solid rgba(0,0,0,0.1)",
                   borderRadius: "10px",
                   padding: "7px 14px",
                   fontWeight: 600,
@@ -190,7 +191,7 @@ export default function Header() {
             <button
               className="mobile-toggle"
               onClick={() => setMenuOpen(!menuOpen)}
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "white", cursor: "pointer", padding: "7px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, transition: "all 0.2s" }}
+              style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.08)", color: "#111827", cursor: "pointer", padding: "7px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, transition: "all 0.2s" }}
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -211,14 +212,15 @@ export default function Header() {
                 top: 68,
                 left: 0,
                 right: 0,
-                background: "rgba(6,6,16,0.98)",
-                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                background: "rgba(255,255,255,0.98)",
+                borderBottom: "1px solid rgba(0,0,0,0.07)",
                 backdropFilter: "blur(24px)",
                 padding: "16px",
                 display: "flex",
                 flexDirection: "column",
                 gap: 6,
                 zIndex: 999,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
               }}
             >
               {navLinks.map((link, i) => {
@@ -238,15 +240,15 @@ export default function Header() {
                         fontSize: 15,
                         fontWeight: 600,
                         textDecoration: "none",
-                        color: isActive ? "#fff" : "rgba(255,255,255,0.5)",
-                        background: isActive ? "rgba(155,92,255,0.1)" : "rgba(255,255,255,0.02)",
-                        border: isActive ? "1px solid rgba(155,92,255,0.2)" : "1px solid transparent",
+                        color: isActive ? "#7C3AED" : "#4b5563",
+                        background: isActive ? "rgba(124,58,237,0.08)" : "rgba(0,0,0,0.02)",
+                        border: isActive ? "1px solid rgba(124,58,237,0.15)" : "1px solid transparent",
                         display: "flex",
                         alignItems: "center",
                         gap: 10,
                       }}
                     >
-                      <link.Icon size={16} color={isActive ? "#9B5CFF" : undefined} />
+                      <link.Icon size={16} color={isActive ? "#7C3AED" : undefined} />
                       {link.label}
                     </Link>
                   </motion.div>
@@ -257,7 +259,7 @@ export default function Header() {
         </AnimatePresence>
       </header>
 
-      {/* Spacer so content doesn't go behind fixed header */}
+      {/* Spacer */}
       <div style={{ height: 68 }} />
 
       <style>{`
