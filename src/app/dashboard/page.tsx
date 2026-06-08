@@ -264,7 +264,11 @@ export default function DashboardPage() {
   });
   const wonBets = bets.filter(b => b.status === 2 && b.hasClaimed && ((b.correctOptionIndex === 0 && b.betOnYes > 0n) || (b.correctOptionIndex === 1 && b.betOnNo > 0n)));
   const lostBets = bets.filter(b => b.status === 2 && ((b.correctOptionIndex === 1 && b.betOnYes > 0n) || (b.correctOptionIndex === 0 && b.betOnNo > 0n)));
-  const refundedBets = bets.filter(b => b.status === 3 && b.hasRefunded && (b.betOnYes > 0n || b.betOnNo > 0n));
+  const refundedBets = bets.filter(b => b.status === 3 && (b.betOnYes > 0n || b.betOnNo > 0n) && (
+    b.hasRefunded ||
+    // Also include seed-forfeited markets (creator whose refund = 0 due to penalty)
+    (b.isCreator && b.seedPenalized && (b.betOnYes + b.betOnNo) <= b.creatorSeedAmount)
+  ));
 
   // Derived state (Friend Bets)
   const activeFriends = friendBets.filter(b => b.status === 1);
@@ -449,13 +453,35 @@ export default function DashboardPage() {
                 {/* WON & LOST */}
                 {(activeTab === "won" || activeTab === "lost") && (
                   <section>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                      {(activeTab === "won" ? [...wonBets, ...refundedBets] : lostBets).map(b => (
-                        <div key={`hist-${b.marketId}`} className="card" style={{ opacity: activeTab === "lost" ? 0.6 : 1, background: "#ffffff", padding: 20, borderRadius: 16, border: "1px solid #e5e7eb" }}>
-                          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#111827" }}>{b.question}</p>
-                        </div>
-                      ))}
-                    </div>
+                    {(activeTab === "won" ? [...wonBets, ...refundedBets] : lostBets).length === 0 ? (
+                      <p style={{ color: "#9ca3af", fontSize: 13 }}>No {activeTab === "won" ? "won or refunded" : "lost"} bets yet.</p>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {(activeTab === "won" ? [...wonBets, ...refundedBets] : lostBets).map(b => {
+                          const isSeedForfeited = b.status === 3 && b.isCreator && b.seedPenalized && (b.betOnYes + b.betOnNo) <= b.creatorSeedAmount;
+                          const isRefund = b.status === 3 && !isSeedForfeited;
+                          return (
+                            <div key={`hist-${b.marketId}`} className="card" style={{ opacity: activeTab === "lost" ? 0.6 : 1, background: "#ffffff", padding: 20, borderRadius: 16, border: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+                              <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#111827", flex: 1, minWidth: 200 }}>{b.question}</p>
+                              {activeTab === "won" && (
+                                <span style={{
+                                  fontSize: 11, fontWeight: 700, fontFamily: "monospace", padding: "4px 10px", borderRadius: 6,
+                                  background: isSeedForfeited ? "rgba(220,38,38,0.08)" : isRefund ? "rgba(59,130,246,0.08)" : "rgba(22,163,74,0.08)",
+                                  color: isSeedForfeited ? "#DC2626" : isRefund ? "#2563EB" : "#16a34a",
+                                  border: `1px solid ${isSeedForfeited ? "rgba(220,38,38,0.2)" : isRefund ? "rgba(59,130,246,0.2)" : "rgba(22,163,74,0.2)"}`,
+                                  whiteSpace: "nowrap",
+                                }}>
+                                  {isSeedForfeited ? "Seed Forfeited" : isRefund ? "Refunded" : "Won"}
+                                </span>
+                              )}
+                              {activeTab === "lost" && (
+                                <span style={{ fontSize: 11, fontWeight: 700, fontFamily: "monospace", padding: "4px 10px", borderRadius: 6, background: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.2)" }}>Lost</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </section>
                 )}
               </div>
