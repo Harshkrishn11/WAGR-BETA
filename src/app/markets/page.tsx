@@ -224,7 +224,7 @@ export default function MarketsPage() {
     .map(r => r.data ? { ...r.data, id: r.id } : null)
     .filter(Boolean) as MarketData[];
 
-  const loading = count > 0 && rawMarkets.length < count;
+  const loading = count > 0 && rawMarkets.length < Math.min(visibleCount, count);
 
   const markets = useMemo(() => {
     let list = rawMarkets.filter(m => m.status !== 3);
