@@ -85,8 +85,11 @@ export default function SingleMarketPage({ params }: { params: Promise<{ id: str
     if (!account) { setErrMsg("Please connect your wallet."); setBetStep("error"); return; }
     if (amount < 1) { setErrMsg("Minimum bet is $1 USDC."); setBetStep("error"); return; }
 
+    if (!PREDICTION_MARKET_ADDRESS) { setErrMsg("Prediction market contract address is not configured."); setBetStep("error"); return; }
+
     const amtBig = BigInt(Math.round(amount * 1_000_000));
     const usdcContract = getContract({ client, chain: activeChain, address: USDC_ADDRESS, abi: ERC20_ABI });
+    const contract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS, abi: PREDICTION_MARKET_ABI as any });
 
     try {
       setBetStep("approving");
