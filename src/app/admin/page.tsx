@@ -28,7 +28,7 @@ interface MarketData {
 }
 
 const STATUS_LABELS = ["🟢 Active", "🟡 Resolved (Dispute)", "✅ Claimable", "❌ Invalidated"];
-const STATUS_COLORS = ["#00FF88", "#f59e0b", "#00D4FF", "#f87171"];
+const STATUS_COLORS = ["#16a34a", "#d97706", "#0891B2", "#DC2626"];
 
 function shortAddr(a: string) { return `${a.slice(0, 6)}…${a.slice(-4)}`; }
 function formatPool(v: bigint | number) { return `$${(Number(v) / 1e6).toFixed(2)}`; }
@@ -95,33 +95,33 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
   }
 
   return (
-    <div style={{ borderRadius: 16, border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)",
-      marginBottom: 10, overflow: "hidden" }}>
+    <div style={{ borderRadius: 16, border: "1px solid #e5e7eb", background: "#ffffff",
+      marginBottom: 10, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
       {/* Row header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", cursor: "pointer" }}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", cursor: "pointer", background: expanded ? "#f9fafb" : "#ffffff", transition: "background 0.2s" }}
         onClick={() => setExpanded(e => !e)}>
-        <span style={{ fontSize: 11, fontFamily: "monospace", minWidth: 24, color: "rgba(255,255,255,0.3)" }}>#{market.id}</span>
+        <span style={{ fontSize: 11, fontFamily: "monospace", minWidth: 24, color: "#9ca3af", fontWeight: 700 }}>#{market.id}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)",
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#111827",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {market.question}
           </p>
-          <p style={{ margin: "2px 0 0", fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.25)" }}>
+          <p style={{ margin: "4px 0 0", fontSize: 11, fontFamily: "monospace", color: "#6b7280" }}>
             {market.category} · Pool: {formatPool(market.totalPool)} · Creator: {shortAddr(market.creator)}
           </p>
         </div>
         
         {isActive && deadlinePassed && (
-           <span style={{ fontSize: 10, fontFamily: "monospace", padding: "2px 6px", borderRadius: 4, background: "rgba(248,113,113,0.15)", color: "#f87171" }}>
+           <span style={{ fontSize: 10, fontFamily: "monospace", padding: "4px 8px", borderRadius: 6, background: "rgba(220,38,38,0.1)", color: "#DC2626", fontWeight: 700 }}>
              Needs Resolution
            </span>
         )}
         
-        <span style={{ fontSize: 11, fontFamily: "monospace", padding: "3px 10px", borderRadius: 99,
-          background: `${statusColor}15`, border: `1px solid ${statusColor}35`, color: statusColor, whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: 11, fontFamily: "monospace", padding: "4px 10px", borderRadius: 99,
+          background: `${statusColor}15`, border: `1px solid ${statusColor}35`, color: statusColor, whiteSpace: "nowrap", fontWeight: 700 }}>
           {STATUS_LABELS[market.status]}
         </span>
-        {expanded ? <ChevronUp size={14} color="rgba(255,255,255,0.3)" /> : <ChevronDown size={14} color="rgba(255,255,255,0.3)" />}
+        {expanded ? <ChevronUp size={16} color="#9ca3af" /> : <ChevronDown size={16} color="#9ca3af" />}
       </div>
 
       {/* Expanded detail + actions */}
@@ -130,8 +130,8 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
             style={{ overflow: "hidden" }}>
-            <div style={{ padding: "0 18px 18px", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 10, marginTop: 14, marginBottom: 16 }}>
+            <div style={{ padding: "0 18px 18px", borderTop: "1px solid #e5e7eb", background: "#f9fafb" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 10, marginTop: 18, marginBottom: 20 }}>
                 {[
                   { label: "Deadline",     value: timeStr(market.deadline) },
                   { label: "Total Pool",   value: formatPool(market.totalPool) },
@@ -140,43 +140,42 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
                   { label: "Platform Fee", value: formatPool(market.platformFee) },
                   ...(isResolved ? [{ label: "Dispute Ends", value: disputeEnds(market.resolvedAt) }] : []),
                 ].map(({ label, value }) => (
-                  <div key={label} style={{ padding: "10px 14px", borderRadius: 10,
-                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                    <p style={{ margin: 0, fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "monospace", marginBottom: 4 }}>{label}</p>
-                    <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.8)", fontFamily: "monospace" }}>{value}</p>
+                  <div key={label} style={{ padding: "12px 14px", borderRadius: 12,
+                    background: "#ffffff", border: "1px solid #e5e7eb" }}>
+                    <p style={{ margin: 0, fontSize: 11, color: "#6b7280", fontFamily: "monospace", marginBottom: 6, fontWeight: 600 }}>{label}</p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#111827", fontFamily: "monospace" }}>{value}</p>
                   </div>
                 ))}
               </div>
 
               {/* Action buttons */}
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
 
                 {/* Resolve YES / NO — only if active and deadline passed */}
                 {isActive && deadlinePassed && (
                   <>
                     <button disabled={!!pendingAction} onClick={() => doAction("resolve", 0)}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", color: "#00FF88",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(22,163,74,0.1)", border: "1px solid rgba(22,163,74,0.3)", color: "#16a34a",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <CheckCircle size={13} />
+                      <CheckCircle size={14} />
                       {pendingAction === "resolve_0" ? "Sending..." : "Resolve → YES"}
                     </button>
                     <button disabled={!!pendingAction} onClick={() => doAction("resolve", 1)}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", color: "#DC2626",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <XCircle size={13} />
+                      <XCircle size={14} />
                       {pendingAction === "resolve_1" ? "Sending..." : "Resolve → NO"}
                     </button>
                   </>
                 )}
 
                 {isActive && !deadlinePassed && (
-                  <span style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.25)", padding: "9px 0" }}>
-                    <Clock size={12} style={{ verticalAlign: "middle", marginRight: 4 }} />
-                    Betting still open — cannot resolve yet
+                  <span style={{ fontSize: 12, fontFamily: "monospace", color: "#6b7280", padding: "9px 0", display: "flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
+                    <Clock size={14} /> Betting still open — cannot resolve yet
                   </span>
                 )}
 
@@ -184,25 +183,25 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
                 {isResolved && (
                   <>
                     <button disabled={!!pendingAction} onClick={() => doAction("override", 0)}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.3)", color: "#00D4FF",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(8,145,178,0.1)", border: "1px solid rgba(8,145,178,0.3)", color: "#0891B2",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <RefreshCw size={12} /> Override → YES
+                      <RefreshCw size={14} /> Override → YES
                     </button>
                     <button disabled={!!pendingAction} onClick={() => doAction("override", 1)}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.3)", color: "#00D4FF",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(8,145,178,0.1)", border: "1px solid rgba(8,145,178,0.3)", color: "#0891B2",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <RefreshCw size={12} /> Override → NO
+                      <RefreshCw size={14} /> Override → NO
                     </button>
                     <button disabled={!!pendingAction} onClick={() => doAction("finalize")}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.25)", color: "#00FF88",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.3)", color: "#7C3AED",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <CheckCircle size={12} /> Finalize (Open Claims)
+                      <CheckCircle size={14} /> Finalize (Open Claims)
                     </button>
                   </>
                 )}
@@ -211,29 +210,29 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
                 {(isActive || isResolved) && (
                   <>
                     <button disabled={!!pendingAction} onClick={() => doAction("invalidate_penalty")}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", color: "#DC2626",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <AlertTriangle size={12} /> Invalidate (Keep Seed)
+                      <AlertTriangle size={14} /> Invalidate (Keep Seed)
                     </button>
                     <button disabled={!!pendingAction} onClick={() => doAction("invalidate_goodfaith")}
-                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 10,
-                        fontWeight: 700, fontSize: 12, fontFamily: "monospace", cursor: "pointer",
-                        background: "rgba(248,113,113,0.04)", border: "1px solid rgba(248,113,113,0.15)", color: "#fca5a5",
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10,
+                        fontWeight: 700, fontSize: 13, fontFamily: "monospace", cursor: "pointer",
+                        background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.2)", color: "#ef4444",
                         opacity: pendingAction ? 0.5 : 1 }}>
-                      <AlertTriangle size={12} /> Invalidate (Refund Seed)
+                      <AlertTriangle size={14} /> Invalidate (Refund Seed)
                     </button>
                   </>
                 )}
 
                 {isClaimable && (
-                  <span style={{ fontSize: 12, fontFamily: "monospace", color: "#00D4FF", padding: "9px 0" }}>
+                  <span style={{ fontSize: 13, fontFamily: "monospace", color: "#0891B2", padding: "9px 0", fontWeight: 700 }}>
                     ✅ Claims are open — winners can claim winnings
                   </span>
                 )}
                 {isInvalidated && (
-                  <span style={{ fontSize: 12, fontFamily: "monospace", color: "#f87171", padding: "9px 0" }}>
+                  <span style={{ fontSize: 13, fontFamily: "monospace", color: "#DC2626", padding: "9px 0", fontWeight: 700 }}>
                     ❌ Market cancelled — users can claim refunds
                   </span>
                 )}
@@ -249,16 +248,16 @@ function AdminMarketRow({ market, onAction }: { market: MarketData; onAction: (t
 // ─── Stats Card Component ────────────────────────────────────────
 function StatCard({ title, value, sub, icon: Icon, color }: any) {
   return (
-    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 20, padding: 24, display: "flex", flexDirection: "column", gap: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <p style={{ margin: 0, fontSize: 13, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>{title}</p>
-        <div style={{ padding: 6, borderRadius: 8, background: `${color}15`, color }}>
-          <Icon size={16} />
+        <p style={{ margin: 0, fontSize: 13, fontFamily: "monospace", color: "#6b7280", fontWeight: 600 }}>{title}</p>
+        <div style={{ padding: 8, borderRadius: 10, background: `${color}15`, color }}>
+          <Icon size={18} />
         </div>
       </div>
       <div>
-        <h3 style={{ margin: 0, fontSize: 28, fontWeight: 800, fontFamily: "var(--font-space-grotesk,sans-serif)", color: "#fff" }}>{value}</h3>
-        {sub && <p style={{ margin: "4px 0 0", fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.3)" }}>{sub}</p>}
+        <h3 style={{ margin: 0, fontSize: 32, fontWeight: 800, fontFamily: "var(--font-space-grotesk,sans-serif)", color: "#111827", letterSpacing: "-0.02em" }}>{value}</h3>
+        {sub && <p style={{ margin: "6px 0 0", fontSize: 12, fontFamily: "monospace", color: "#9ca3af", fontWeight: 600 }}>{sub}</p>}
       </div>
     </div>
   );
@@ -339,15 +338,15 @@ export default function AdminPage() {
   // ── Auth Gate: Only wallet owner can access ──
   if (!account || !ownerAddress) {
     return (
-      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#ffffff" }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 400, width: "100%", padding: "40px 32px", borderRadius: 24,
-            border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)", display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+            border: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", flexDirection: "column", alignItems: "center", gap: 20, boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Shield size={22} color="#9B5CFF" />
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#fff", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>Admin Panel</h1>
+            <Shield size={24} color="#7C3AED" />
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "#111827", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>Admin Panel</h1>
           </div>
-          <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", textAlign: "center" }}>
+          <p style={{ margin: 0, fontSize: 13, color: "#6b7280", fontFamily: "monospace", textAlign: "center", lineHeight: 1.5 }}>
             Connect the contract owner wallet to access the admin panel.
           </p>
           <ConnectButton client={client} />
@@ -358,13 +357,13 @@ export default function AdminPage() {
 
   if (!isOwner) {
     return (
-      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#ffffff" }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           style={{ maxWidth: 400, width: "100%", padding: "40px 32px", borderRadius: 24,
-            border: "1px solid rgba(248,113,113,0.2)", background: "rgba(248,113,113,0.03)", backdropFilter: "blur(12px)", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-          <Shield size={40} color="#f87171" />
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#f87171" }}>⚠️ Unauthorized Wallet</h2>
-          <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", textAlign: "center" }}>
+            border: "1px solid rgba(220,38,38,0.2)", background: "rgba(220,38,38,0.05)", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+          <Shield size={48} color="#DC2626" />
+          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#DC2626" }}>⚠️ Unauthorized Wallet</h2>
+          <p style={{ margin: 0, fontSize: 13, color: "#4b5563", fontFamily: "monospace", textAlign: "center", lineHeight: 1.5 }}>
             The connected wallet is not the contract owner.<br/>Switch to the deployer wallet.
           </p>
           <ConnectButton client={client} />
@@ -374,25 +373,25 @@ export default function AdminPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", padding: "80px 24px 80px" }}>
+    <main style={{ minHeight: "100vh", padding: "80px 24px 80px", background: "#ffffff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32, flexWrap: "wrap", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 48, height: 48, borderRadius: 16, background: "rgba(155,92,255,0.1)", border: "1px solid rgba(155,92,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Shield size={24} color="#9B5CFF" />
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Shield size={28} color="#7C3AED" />
             </div>
             <div>
-              <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>
+              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "#111827", fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.02em" }}>
                 Admin Dashboard
               </h1>
-              <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>Manage markets and platform settings</p>
+              <p style={{ margin: "4px 0 0", fontSize: 13, color: "#6b7280", fontFamily: "monospace" }}>Manage markets and platform settings</p>
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             {!account && (
-              <span style={{ fontSize: 12, fontFamily: "monospace", color: "#f87171", padding: "10px", borderRadius: 8, background: "rgba(248,113,113,0.1)" }}>
+              <span style={{ fontSize: 12, fontFamily: "monospace", color: "#DC2626", padding: "10px 16px", borderRadius: 10, background: "rgba(220,38,38,0.1)", fontWeight: 700 }}>
                 ⚠️ Connect wallet to manage
               </span>
             )}
@@ -400,22 +399,22 @@ export default function AdminPage() {
         </div>
 
         {/* Main Tabs */}
-        <div style={{ display: "flex", gap: 16, borderBottom: "1px solid rgba(255,255,255,0.05)", marginBottom: 32, overflowX: "auto" }}>
-          <button onClick={() => setActiveTab("dashboard")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "dashboard" ? "#fff" : "rgba(255,255,255,0.4)", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "dashboard" ? "2px solid #9B5CFF" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap" }}>
-            <Activity size={16} /> Overview & Markets
+        <div style={{ display: "flex", gap: 24, borderBottom: "1px solid #e5e7eb", marginBottom: 32, overflowX: "auto" }}>
+          <button onClick={() => setActiveTab("dashboard")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "dashboard" ? "#111827" : "#9ca3af", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "dashboard" ? "2px solid #7C3AED" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap", transition: "all 0.2s" }}>
+            <Activity size={18} /> Overview & Markets
           </button>
-          <button onClick={() => setActiveTab("settings")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "settings" ? "#fff" : "rgba(255,255,255,0.4)", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "settings" ? "2px solid #9B5CFF" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap" }}>
-            <Settings size={16} /> Advanced Settings
+          <button onClick={() => setActiveTab("settings")} style={{ padding: "0 0 16px 0", background: "none", border: "none", color: activeTab === "settings" ? "#111827" : "#9ca3af", fontWeight: 700, fontSize: 15, cursor: "pointer", borderBottom: activeTab === "settings" ? "2px solid #7C3AED" : "2px solid transparent", display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap", transition: "all 0.2s" }}>
+            <Settings size={18} /> Advanced Settings
           </button>
         </div>
 
         {/* Status message */}
         {txMsg && (
-          <div style={{ marginBottom: 24, padding: "12px 16px", borderRadius: 12,
-            background: txMsg.startsWith("✅") ? "rgba(0,255,136,0.06)" : txMsg.startsWith("❌") ? "rgba(248,113,113,0.06)" : "rgba(0,212,255,0.06)",
-            border: `1px solid ${txMsg.startsWith("✅") ? "rgba(0,255,136,0.2)" : txMsg.startsWith("❌") ? "rgba(248,113,113,0.2)" : "rgba(0,212,255,0.2)"}`,
-            fontSize: 13, fontFamily: "monospace",
-            color: txMsg.startsWith("✅") ? "#00FF88" : txMsg.startsWith("❌") ? "#f87171" : "#00D4FF" }}>
+          <div style={{ marginBottom: 24, padding: "16px 20px", borderRadius: 16,
+            background: txMsg.startsWith("✅") ? "rgba(22,163,74,0.1)" : txMsg.startsWith("❌") ? "rgba(220,38,38,0.1)" : "rgba(8,145,178,0.1)",
+            border: `1px solid ${txMsg.startsWith("✅") ? "rgba(22,163,74,0.2)" : txMsg.startsWith("❌") ? "rgba(220,38,38,0.2)" : "rgba(8,145,178,0.2)"}`,
+            fontSize: 14, fontFamily: "monospace", fontWeight: 600,
+            color: txMsg.startsWith("✅") ? "#16a34a" : txMsg.startsWith("❌") ? "#DC2626" : "#0891B2" }}>
             {txMsg}
           </div>
         )}
@@ -425,26 +424,26 @@ export default function AdminPage() {
         {activeTab === "dashboard" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {/* Stats Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginBottom: 40 }}>
-              <StatCard title="Total Value Locked" value={formatPool(activeTVL)} sub="Across active & disputed" icon={TrendingUp} color="#00FF88" />
-              <StatCard title="Total Volume" value={formatPool(totalVolume)} sub={`${count} markets created`} icon={Activity} color="#9B5CFF" />
-              <StatCard title="Lifetime Revenue" value={formatPool(lifetimeRev)} sub="1% Platform Fee" icon={DollarSign} color="#f59e0b" />
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
-                <p style={{ margin: 0, fontSize: 13, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>Revenue Breakdown</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 40 }}>
+              <StatCard title="Total Value Locked" value={formatPool(activeTVL)} sub="Across active & disputed" icon={TrendingUp} color="#16a34a" />
+              <StatCard title="Total Volume" value={formatPool(totalVolume)} sub={`${count} markets created`} icon={Activity} color="#7C3AED" />
+              <StatCard title="Lifetime Revenue" value={formatPool(lifetimeRev)} sub="1% Platform Fee" icon={DollarSign} color="#d97706" />
+              <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 20, padding: 24, display: "flex", flexDirection: "column", gap: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
+                <p style={{ margin: 0, fontSize: 13, fontFamily: "monospace", color: "#6b7280", fontWeight: 600 }}>Revenue Breakdown</p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.5)" }}>Monthly</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "monospace" }}>{formatPool(monthlyRev)}</span>
+                  <span style={{ fontSize: 12, fontFamily: "monospace", color: "#9ca3af", fontWeight: 600 }}>Monthly</span>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: "#111827", fontFamily: "monospace" }}>{formatPool(monthlyRev)}</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 8 }}>
-                  <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.5)" }}>Quarterly</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "monospace" }}>{formatPool(quarterlyRev)}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #e5e7eb", paddingTop: 12 }}>
+                  <span style={{ fontSize: 12, fontFamily: "monospace", color: "#9ca3af", fontWeight: 600 }}>Quarterly</span>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: "#111827", fontFamily: "monospace" }}>{formatPool(quarterlyRev)}</span>
                 </div>
               </div>
             </div>
 
             {/* Controls Row */}
-            <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ display: "flex", gap: 4, padding: 4, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", overflowX: "auto" }}>
+            <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 6, padding: 6, borderRadius: 14, background: "#f9fafb", border: "1px solid #e5e7eb", overflowX: "auto" }}>
                 {[
                   ["action",   `⚡ Action Needed (${actionNeededCount})`],
                   ["active",   "🟢 Active"],
@@ -453,25 +452,27 @@ export default function AdminPage() {
                   ["all",      "All Markets"]
                 ] .map(([id, label]) => (
                   <button key={id} onClick={() => setFilter(id as any)}
-                    style={{ padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: "monospace",
+                    style={{ padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, fontFamily: "monospace",
                       cursor: "pointer", border: "none", transition: "all 0.2s", whiteSpace: "nowrap",
-                      background: filter === id ? (id === "action" ? "rgba(255,184,0,0.15)" : "rgba(155,92,255,0.18)") : "transparent",
-                      color: filter === id ? (id === "action" ? "#FFB800" : "#c4b5fd") : "rgba(255,255,255,0.3)" }}>
+                      background: filter === id ? (id === "action" ? "rgba(217,119,6,0.15)" : "rgba(124,58,237,0.15)") : "transparent",
+                      color: filter === id ? (id === "action" ? "#d97706" : "#7C3AED") : "#6b7280" }}>
                     {label}
                   </button>
                 ))}
               </div>
-              <div style={{ position: "relative", width: 240 }}>
-                <Search size={14} color="rgba(255,255,255,0.4)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
+              <div style={{ position: "relative", width: 280 }}>
+                <Search size={16} color="#9ca3af" style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)" }} />
                 <input type="text" placeholder="Search markets..." value={search} onChange={e => setSearch(e.target.value)}
-                  style={{ width: "100%", padding: "10px 10px 10px 36px", borderRadius: 10, boxSizing: "border-box",
-                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 13, fontFamily: "monospace", outline: "none" }} />
+                  style={{ width: "100%", padding: "12px 16px 12px 42px", borderRadius: 12, boxSizing: "border-box",
+                    background: "#f9fafb", border: "1px solid #e5e7eb", color: "#111827", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border-color 0.2s" }}
+                  onFocus={e => e.target.style.borderColor = "#7C3AED"}
+                  onBlur={e => e.target.style.borderColor = "#e5e7eb"} />
               </div>
             </div>
 
             {/* Market list */}
             {visible.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "rgba(255,255,255,0.2)", fontFamily: "monospace", background: "rgba(255,255,255,0.01)", borderRadius: 16, border: "1px dashed rgba(255,255,255,0.05)" }}>
+              <div style={{ textAlign: "center", padding: "80px 0", color: "#9ca3af", fontFamily: "monospace", background: "#f9fafb", borderRadius: 24, border: "1px dashed #e5e7eb", fontSize: 14 }}>
                 No markets found for this filter.
               </div>
             ) : (
@@ -486,13 +487,13 @@ export default function AdminPage() {
 
         {activeTab === "settings" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ maxWidth: 600 }}>
-            <h2 style={{ fontSize: 18, color: "#fff", marginBottom: 24, fontFamily: "var(--font-space-grotesk,sans-serif)" }}>Platform Settings</h2>
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 24 }}>
-              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontFamily: "monospace", margin: "0 0 20px" }}>
+            <h2 style={{ fontSize: 20, color: "#111827", marginBottom: 24, fontFamily: "var(--font-space-grotesk,sans-serif)", fontWeight: 800 }}>Platform Settings</h2>
+            <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 24, padding: 32, boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}>
+              <p style={{ color: "#6b7280", fontSize: 14, fontFamily: "monospace", margin: "0 0 24px", lineHeight: 1.6 }}>
                 These settings require the Admin (Owner) wallet to execute. Future updates will add UI controls for min-seed and emergency pause.
               </p>
-              <div style={{ padding: 16, background: "rgba(0,0,0,0.2)", borderRadius: 8, border: "1px dashed rgba(255,255,255,0.1)" }}>
-                 <p style={{ margin: 0, color: "#9ca3af", fontSize: 12, fontFamily: "monospace" }}>Coming soon: Update Treasury Address, Set Min Seed Amount, Emergency Pause/Unpause.</p>
+              <div style={{ padding: 20, background: "#f9fafb", borderRadius: 16, border: "1px dashed #e5e7eb" }}>
+                 <p style={{ margin: 0, color: "#9ca3af", fontSize: 13, fontFamily: "monospace", lineHeight: 1.5 }}>Coming soon: Update Treasury Address, Set Min Seed Amount, Emergency Pause/Unpause.</p>
               </div>
             </div>
           </motion.div>

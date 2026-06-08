@@ -9,8 +9,7 @@ import { getContract, readContract } from "thirdweb";
 import { client } from "@/lib/thirdweb";
 import { activeChain, PREDICTION_MARKET_ADDRESS } from "@/lib/contracts";
 import PREDICTION_MARKET_ABI from "@/lib/WagrPredictionMarket.json";
-import { Search, Flame, Clock, TrendingUp, Zap, PlusCircle, Filter } from "lucide-react";
-import BetModal from "@/components/BetModal";
+import { Search, Flame, Clock, TrendingUp, Zap, PlusCircle } from "lucide-react";
 
 // ─── Types ──────────────────────────────────────────────────────
 interface MarketData {
@@ -31,17 +30,18 @@ interface MarketData {
 
 // ─── Constants ───────────────────────────────────────────────────
 const TABS = [
-  { id: "new",     label: "🆕 New",         icon: Zap },
-  { id: "trending",label: "🔥 Trending",    icon: Flame },
-  { id: "highpool",label: "💰 High Pool",   icon: TrendingUp },
-  { id: "ending",  label: "⏰ Ending Soon", icon: Clock },
+  { id: "new",      label: "🆕 New",         icon: Zap },
+  { id: "trending", label: "🔥 Trending",    icon: Flame },
+  { id: "highpool", label: "💰 High Pool",   icon: TrendingUp },
+  { id: "ending",   label: "⏰ Ending Soon", icon: Clock },
 ] as const;
 
 const CATEGORIES = ["All", "Crypto", "Politics", "Sports", "Tech", "Macro", "Entertainment", "Science", "Others"];
 
 const CATCLR: Record<string, string> = {
-  Crypto: "#9B5CFF", Politics: "#f59e0b", Sports: "#22d3ee",
-  Tech: "#00FF88",   Macro: "#f472b6",    Entertainment: "#fb923c", Science: "#34d399", Others: "#9ca3af"
+  Crypto: "#7C3AED", Politics: "#2563EB", Sports: "#0891B2",
+  Tech: "#059669", Macro: "#D97706", Entertainment: "#DC2626",
+  Science: "#7C3AED", Others: "#6B7280",
 };
 
 function timeLeft(deadline: bigint): string {
@@ -67,7 +67,7 @@ const MarketCard = memo(function MarketCard({ market }: { market: MarketData }) 
 
   const yes = Number(yesPool ?? 0n), no = Number(noPool ?? 0n), total = yes + no;
   const yP = total > 0 ? Math.round((yes / total) * 100) : 50;
-  const clr = CATCLR[market.category] ?? "#9B5CFF";
+  const clr = CATCLR[market.category] ?? "#7C3AED";
   const isActive = market.status === 0;
   const isInvalidated = market.status === 3;
   const tLeft = timeLeft(market.deadline);
@@ -75,119 +75,141 @@ const MarketCard = memo(function MarketCard({ market }: { market: MarketData }) 
   const router = useRouter();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-      whileHover={{ y: -6, transition: { duration: 0.15 } }}
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ y: -4, transition: { duration: 0.15 } }}
       onClick={() => router.push(`/markets/${market.id}`)}
-      style={{ borderRadius: 20, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-        backdropFilter: "blur(12px)", padding: 20, display: "flex", flexDirection: "column", gap: 14, cursor: "pointer",
-        transition: "border-color 0.3s, box-shadow 0.3s", height: "100%", boxSizing: "border-box" }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = `${clr}50`; (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 40px ${clr}15`; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+      style={{
+        borderRadius: 16,
+        background: "#ffffff",
+        border: "1px solid #e5e7eb",
+        padding: 20,
+        display: "flex",
+        flexDirection: "column",
+        gap: 14,
+        cursor: "pointer",
+        transition: "border-color 0.2s, box-shadow 0.2s",
+        height: "100%",
+        boxSizing: "border-box",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = `${clr}50`;
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.10)`;
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = "#e5e7eb";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.05)";
+      }}
     >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-          <span style={{ fontSize: 10, fontFamily: "monospace", padding: "3px 10px", borderRadius: 99,
-            background: `${clr}18`, border: `1px solid ${clr}35`, color: clr }}>
-            {market.category}
-          </span>
-          <span style={{ fontSize: 11, fontFamily: "monospace", color: isEnded ? "#f87171" : "rgba(255,255,255,0.3)" }}>
-            {tLeft}
-          </span>
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+        <span style={{
+          fontSize: 10, fontFamily: "monospace", padding: "3px 10px", borderRadius: 99,
+          background: `${clr}12`, border: `1px solid ${clr}30`, color: clr, fontWeight: 700,
+          textTransform: "uppercase", letterSpacing: "0.05em",
+        }}>
+          {market.category}
+        </span>
+        <span style={{ fontSize: 11, fontFamily: "monospace", color: isEnded ? "#DC2626" : "#9ca3af" }}>
+          {tLeft}
+        </span>
+      </div>
 
-        <p style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.88)", lineHeight: 1.5, margin: 0,
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-          {market.question}
-        </p>
+      <p style={{
+        fontSize: 14, fontWeight: 600, color: "#111827", lineHeight: 1.55, margin: 0,
+        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+      }}>
+        {market.question}
+      </p>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 13, fontFamily: "monospace", color: "#00FF88", fontWeight: 700 }}>
-            ${(Number(market.totalPool) / 1e6).toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-          <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(255,255,255,0.2)" }}>
-            by {shortAddr(market.creator)}
-          </span>
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: 13, fontFamily: "monospace", color: "#16a34a", fontWeight: 700 }}>
+          ${(Number(market.totalPool) / 1e6).toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </span>
+        <span style={{ fontSize: 10, fontFamily: "monospace", color: "#9ca3af" }}>
+          by {shortAddr(market.creator)}
+        </span>
+      </div>
 
-        {!isInvalidated && (
-          <>
-            <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 99, overflow: "hidden", display: "flex" }}>
-              <div style={{ width: `${yP}%`, background: "linear-gradient(90deg,#00FF88,#34d399)", transition: "width 0.5s" }} />
-              <div style={{ width: `${100-yP}%`, background: "linear-gradient(90deg,#f87171,#ef4444)", transition: "width 0.5s" }} />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <button disabled
-                style={{ width: "100%", padding: "9px 0", borderRadius: 10, fontSize: 12, fontWeight: 700,
-                  fontFamily: "monospace", cursor: "pointer",
-                  background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.18)",
-                  color: "#00FF88", transition: "all 0.15s", opacity: isActive ? 1 : 0.5 }}>
-                YES {yP}%
-              </button>
-              <button disabled
-                style={{ width: "100%", padding: "9px 0", borderRadius: 10, fontSize: 12, fontWeight: 700,
-                  fontFamily: "monospace", cursor: "pointer",
-                  background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.18)",
-                  color: "#f87171", transition: "all 0.15s", opacity: isActive ? 1 : 0.5 }}>
-                NO {100-yP}%
-              </button>
-            </div>
-          </>
-        )}
-        {isInvalidated && (
-          <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(248,113,113,0.07)",
-            border: "1px solid rgba(248,113,113,0.15)", fontSize: 12, color: "#f87171", textAlign: "center" }}>
-            Market cancelled
+      {!isInvalidated && (
+        <>
+          <div style={{ height: 4, background: "#f3f4f6", borderRadius: 99, overflow: "hidden", display: "flex" }}>
+            <div style={{ width: `${yP}%`, background: "linear-gradient(90deg,#10B981,#34d399)", transition: "width 0.5s" }} />
+            <div style={{ width: `${100 - yP}%`, background: "linear-gradient(90deg,#f87171,#ef4444)", transition: "width 0.5s" }} />
           </div>
-        )}
-      </motion.div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <button disabled style={{
+              width: "100%", padding: "9px 0", borderRadius: 10, fontSize: 12, fontWeight: 700,
+              fontFamily: "monospace", cursor: "pointer",
+              background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.25)",
+              color: "#059669", opacity: isActive ? 1 : 0.5,
+            }}>
+              YES {yP}%
+            </button>
+            <button disabled style={{
+              width: "100%", padding: "9px 0", borderRadius: 10, fontSize: 12, fontWeight: 700,
+              fontFamily: "monospace", cursor: "pointer",
+              background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
+              color: "#DC2626", opacity: isActive ? 1 : 0.5,
+            }}>
+              NO {100 - yP}%
+            </button>
+          </div>
+        </>
+      )}
+      {isInvalidated && (
+        <div style={{
+          padding: "10px 14px", borderRadius: 10, background: "rgba(239,68,68,0.06)",
+          border: "1px solid rgba(239,68,68,0.18)", fontSize: 12, color: "#DC2626", textAlign: "center",
+        }}>
+          Market cancelled
+        </div>
+      )}
+    </motion.div>
   );
 });
 
-// ─── Loader skeletons ────────────────────────────────────────────
+// ─── Skeleton ────────────────────────────────────────────────────
 function Skeleton() {
   return (
-    <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)",
-      height: 220, animation: "pulse 1.5s infinite" }} />
+    <div style={{
+      borderRadius: 16, background: "#f9fafb", border: "1px solid #e5e7eb",
+      height: 220, animation: "pulse 1.5s infinite",
+    }} />
   );
 }
 
-// ─── Main Hook: fetch paginated markets (Newest First) ───────────────────────────────
+// ─── Fetch Hook ──────────────────────────────────────────────────
 function usePaginatedMarkets(totalMarkets: number, visibleCount: number) {
-  const [results, setResults] = useState<{data: any, id: number}[]>([]);
-  
+  const [results, setResults] = useState<{ data: any; id: number }[]>([]);
+
   useEffect(() => {
-    if (totalMarkets <= 0) {
-      setResults([]);
-      return;
-    }
+    if (totalMarkets <= 0) { setResults([]); return; }
     let active = true;
     async function load() {
       const contract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS!, abi: PREDICTION_MARKET_ABI as any });
-      const promises = [];
-      
       const startId = totalMarkets - 1;
       const limit = Math.min(visibleCount, totalMarkets);
-      
-      for (let i = 0; i < limit; i++) {
-        const id = startId - i;
-        promises.push(readContract({ contract, method: "getMarket", params: [BigInt(id)] }));
-      }
+      const promises = Array.from({ length: limit }, (_, i) =>
+        readContract({ contract, method: "getMarket", params: [BigInt(startId - i)] })
+      );
       try {
         const res = await Promise.all(promises);
         if (active) setResults(res.map((data, idx) => ({ data, id: startId - idx })));
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     }
     load();
     return () => { active = false; };
   }, [totalMarkets, visibleCount]);
-  
+
   return results;
 }
 
 // ─── Page ────────────────────────────────────────────────────────
 export default function MarketsPage() {
-  const [tab,      setTab]      = useState<"new"|"trending"|"highpool"|"ending">("new");
+  const [tab,      setTab]      = useState<"new" | "trending" | "highpool" | "ending">("new");
   const [category, setCategory] = useState("All");
   const [search,   setSearch]   = useState("");
   const [focused,  setFocused]  = useState(false);
@@ -205,10 +227,9 @@ export default function MarketsPage() {
   const loading = count > 0 && rawMarkets.length < count;
 
   const markets = useMemo(() => {
-    let list = rawMarkets.filter(m => m.status !== 3); // hide invalidated from main feed
+    let list = rawMarkets.filter(m => m.status !== 3);
     if (category !== "All") list = list.filter(m => m.category === category);
     if (search.trim())      list = list.filter(m => m.question.toLowerCase().includes(search.toLowerCase()));
-
     switch (tab) {
       case "new":      return [...list].sort((a, b) => b.id - a.id);
       case "trending": return [...list].sort((a, b) => Number(b.totalPool) - Number(a.totalPool));
@@ -218,91 +239,108 @@ export default function MarketsPage() {
   }, [rawMarkets, tab, category, search]);
 
   return (
-    <main style={{ minHeight: "100vh", padding: "80px 24px 80px" }}>
+    <main style={{ minHeight: "100vh", padding: "40px 24px 80px", background: "#ffffff" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
-        {/* Header */}
+        {/* ── Page Header ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
           <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "4px 12px", borderRadius: 99,
-              border: "1px solid rgba(155,92,255,0.3)", background: "rgba(155,92,255,0.08)", marginBottom: 12 }}>
-              <Flame size={11} color="#9B5CFF" />
-              <span style={{ fontSize: 10, fontFamily: "monospace", letterSpacing: "0.12em", textTransform: "uppercase", color: "#c4b5fd" }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8, padding: "4px 12px", borderRadius: 99,
+              border: "1px solid rgba(124,58,237,0.2)", background: "rgba(124,58,237,0.06)", marginBottom: 12,
+            }}>
+              <Flame size={11} color="#7C3AED" />
+              <span style={{ fontSize: 10, fontFamily: "monospace", letterSpacing: "0.12em", textTransform: "uppercase", color: "#7C3AED", fontWeight: 700 }}>
                 All Markets
               </span>
             </div>
-            <h1 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#fff", margin: 0,
-              fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.02em" }}>
+            <h1 style={{
+              fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, color: "#111827", margin: 0,
+              fontFamily: "var(--font-space-grotesk,sans-serif)", letterSpacing: "-0.02em",
+            }}>
               Discover Bets
             </h1>
             {count > 0 && (
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", margin: "6px 0 0", fontFamily: "monospace" }}>
+              <p style={{ fontSize: 13, color: "#9ca3af", margin: "6px 0 0", fontFamily: "monospace" }}>
                 {count} markets live on-chain
               </p>
             )}
           </div>
           <Link href="/create">
-            <button style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: 14,
-              fontWeight: 700, fontSize: 13, color: "#fff", background: "linear-gradient(135deg,#7C3AED,#9B5CFF)",
-              border: "none", cursor: "pointer", boxShadow: "0 0 24px rgba(139,92,246,0.4)" }}>
+            <button style={{
+              display: "flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: 14,
+              fontWeight: 700, fontSize: 13, color: "#fff",
+              background: "linear-gradient(135deg,#7C3AED,#9B5CFF)",
+              border: "none", cursor: "pointer", boxShadow: "0 4px 16px rgba(124,58,237,0.3)",
+            }}>
               <PlusCircle size={15} /> Create Market
             </button>
           </Link>
         </div>
 
-        {/* Search + Filters row */}
+        {/* ── Search + Filters ── */}
         <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
-          {/* Search */}
           <div style={{ position: "relative", flex: "1 1 260px", minWidth: 200 }}>
-            <Search size={14} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.25)", pointerEvents: "none" }} />
+            <Search size={14} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#9ca3af", pointerEvents: "none" }} />
             <input
               type="text" placeholder="Search markets..." value={search}
               onChange={e => setSearch(e.target.value)}
               onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-              style={{ width: "100%", padding: "11px 14px 11px 38px", borderRadius: 12, fontSize: 13,
-                background: "rgba(255,255,255,0.04)", border: `1px solid ${focused ? "rgba(155,92,255,0.5)" : "rgba(255,255,255,0.08)"}`,
-                color: "#fff", outline: "none", boxSizing: "border-box", fontFamily: "Inter,sans-serif",
-                transition: "border-color 0.2s" }} />
+              style={{
+                width: "100%", padding: "11px 14px 11px 38px", borderRadius: 12, fontSize: 13,
+                background: "#f9fafb",
+                border: `1px solid ${focused ? "#7C3AED" : "#e5e7eb"}`,
+                color: "#111827", outline: "none", boxSizing: "border-box",
+                fontFamily: "Inter,sans-serif", transition: "border-color 0.2s",
+                boxShadow: focused ? "0 0 0 3px rgba(124,58,237,0.1)" : "none",
+              }}
+            />
           </div>
 
           {/* Category pills */}
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {CATEGORIES.map(cat => (
-              <button key={cat} onClick={() => setCategory(cat)}
-                style={{ padding: "8px 14px", borderRadius: 99, fontSize: 11, fontWeight: 600, fontFamily: "monospace",
-                  cursor: "pointer", transition: "all 0.15s",
-                  background: category === cat ? "rgba(155,92,255,0.15)" : "rgba(255,255,255,0.04)",
-                  border:     category === cat ? "1px solid rgba(155,92,255,0.45)" : "1px solid rgba(255,255,255,0.07)",
-                  color:      category === cat ? "#c4b5fd" : "rgba(255,255,255,0.38)" }}>
+              <button key={cat} onClick={() => setCategory(cat)} style={{
+                padding: "7px 14px", borderRadius: 99, fontSize: 11, fontWeight: 600,
+                fontFamily: "monospace", cursor: "pointer", transition: "all 0.15s",
+                background: category === cat ? "rgba(124,58,237,0.1)" : "#f9fafb",
+                border:     category === cat ? "1px solid rgba(124,58,237,0.35)" : "1px solid #e5e7eb",
+                color:      category === cat ? "#7C3AED" : "#6b7280",
+              }}>
                 {cat}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 28, padding: "4px", borderRadius: 14,
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", width: "fit-content" }}>
+        {/* ── Tabs ── */}
+        <div style={{
+          display: "flex", gap: 4, marginBottom: 28, padding: "4px", borderRadius: 14,
+          background: "#f9fafb", border: "1px solid #e5e7eb", width: "fit-content",
+        }}>
           {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id as any)}
-              style={{ padding: "9px 18px", borderRadius: 10, fontSize: 12, fontWeight: 700,
-                fontFamily: "monospace", cursor: "pointer", transition: "all 0.2s", border: "none",
-                background: tab === t.id ? "rgba(155,92,255,0.2)" : "transparent",
-                color:      tab === t.id ? "#c4b5fd" : "rgba(255,255,255,0.3)",
-                boxShadow:  tab === t.id ? "0 0 16px rgba(155,92,255,0.15)" : "none" }}>
+            <button key={t.id} onClick={() => setTab(t.id as any)} style={{
+              padding: "9px 18px", borderRadius: 10, fontSize: 12, fontWeight: 700,
+              fontFamily: "monospace", cursor: "pointer", transition: "all 0.2s", border: "none",
+              background: tab === t.id ? "#ffffff" : "transparent",
+              color:      tab === t.id ? "#7C3AED" : "#9ca3af",
+              boxShadow:  tab === t.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+            }}>
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* Grid */}
+        {/* ── Grid ── */}
         {count === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px 0", color: "rgba(255,255,255,0.2)" }}>
+          <div style={{ textAlign: "center", padding: "80px 0", color: "#9ca3af" }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>🔮</div>
-            <p style={{ fontSize: 15, fontFamily: "monospace" }}>No markets yet. Be the first to create one!</p>
+            <p style={{ fontSize: 15, fontFamily: "monospace", color: "#6b7280" }}>No markets yet. Be the first to create one!</p>
             <Link href="/create">
-              <button style={{ marginTop: 20, padding: "12px 28px", borderRadius: 14, fontWeight: 700, fontSize: 13,
-                color: "#fff", background: "linear-gradient(135deg,#7C3AED,#9B5CFF)", border: "none", cursor: "pointer" }}>
+              <button style={{
+                marginTop: 20, padding: "12px 28px", borderRadius: 14, fontWeight: 700, fontSize: 13,
+                color: "#fff", background: "linear-gradient(135deg,#7C3AED,#9B5CFF)", border: "none", cursor: "pointer",
+              }}>
                 Create First Market
               </button>
             </Link>
@@ -312,26 +350,28 @@ export default function MarketsPage() {
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} />)}
           </div>
         ) : markets.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 0", color: "rgba(255,255,255,0.2)" }}>
+          <div style={{ textAlign: "center", padding: "60px 0" }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-            <p style={{ fontFamily: "monospace" }}>No markets match your filters.</p>
+            <p style={{ fontFamily: "monospace", color: "#6b7280" }}>No markets match your filters.</p>
           </div>
         ) : (
           <AnimatePresence>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20 }}>
-              {markets.map((m) => (
-                <MarketCard key={m.id} market={m} />
-              ))}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
+              {markets.map(m => <MarketCard key={m.id} market={m} />)}
             </div>
 
-            {/* Load More Button */}
             {count > visibleCount && (
               <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
-                <button 
+                <button
                   onClick={() => setVisibleCount(v => v + 12)}
-                  style={{ padding: "12px 32px", borderRadius: 99, fontSize: 14, fontWeight: 700, fontFamily: "monospace", color: "#fff", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", transition: "all 0.2s" }}
-                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)"}
-                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"}
+                  style={{
+                    padding: "12px 32px", borderRadius: 99, fontSize: 14, fontWeight: 700,
+                    fontFamily: "monospace", color: "#7C3AED",
+                    background: "rgba(124,58,237,0.06)", border: "1px solid rgba(124,58,237,0.2)",
+                    cursor: "pointer", transition: "all 0.2s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.12)"}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.06)"}
                 >
                   Load More Markets
                 </button>
@@ -342,10 +382,8 @@ export default function MarketsPage() {
       </div>
 
       <style>{`
-        @keyframes pulse {
-          0%,100% { opacity: 0.4; }
-          50%      { opacity: 0.8; }
-        }
+        @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        input::placeholder { color: #9ca3af; }
       `}</style>
     </main>
   );
