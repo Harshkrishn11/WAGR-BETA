@@ -163,48 +163,154 @@ export default function CreateMarketPage() {
 
   /* ── Success ── */
   if (step === "done") {
+    const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/markets/${createdMarketId ?? ""}`;
+    const shareText = `I just created a prediction market on @WAGRxyz 🔮\n\n"${question.trim()}"\n\nBet YES or NO with USDC on Base. 💰\n\n`;
+    const twitterUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+
+    const catColor = ({ Crypto: "#9B5CFF", Politics: "#f59e0b", Sports: "#0891B2", Tech: "#059669", Macro: "#DB2777", Entertainment: "#fb923c", Science: "#34d399", Others: "#9ca3af" } as Record<string, string>)[category] ?? "#9B5CFF";
+
     return (
       <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "#ffffff" }}>
-        <motion.div {...fadeUp(0)}
-          style={{ maxWidth: 480, width: "100%", textAlign: "center", padding: "48px 32px", borderRadius: 24, border: "1px solid rgba(22,163,74,0.3)", background: "rgba(22,163,74,0.06)", boxShadow: "0 4px 24px rgba(22,163,74,0.08)" }}>
-          <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(22,163,74,0.1)", border: "1px solid rgba(22,163,74,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-            <Sparkles size={32} color="#16a34a" />
+        <motion.div {...fadeUp(0)} style={{ maxWidth: 520, width: "100%", display: "flex", flexDirection: "column", gap: 24 }}>
+
+          {/* Confetti header */}
+          <div style={{ textAlign: "center" }}>
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.1 }}
+              style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #16a34a, #34d399)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 8px 32px rgba(22,163,74,0.25)" }}>
+              <Sparkles size={32} color="#fff" />
+            </motion.div>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111827", margin: "0 0 8px", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>Market is Live! 🎉</h1>
+            <p style={{ fontSize: 14, color: "#6b7280", margin: 0 }}>Share it everywhere — you earn <strong style={{ color: "#16a34a" }}>2% of all volume</strong></p>
           </div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: "#111827", margin: "0 0 12px", fontFamily: "var(--font-space-grotesk,sans-serif)" }}>Market Created! 🎉</h1>
-          <p style={{ fontSize: 14, color: "#4b5563", lineHeight: 1.7, margin: "0 0 8px" }}>
-            Your market is now live on-chain. Share it everywhere — you earn <strong style={{ color: "#16a34a" }}>2% of all volume</strong> when it resolves!
-          </p>
-          {txHash && (
-            <a href={`https://sepolia.basescan.org/tx/${txHash}`} target="_blank" rel="noopener noreferrer"
-              style={{ display: "inline-block", fontSize: 11, fontFamily: "monospace", color: "#7C3AED", marginBottom: 20, textDecoration: "underline" }}>
-              View on BaseScan ↗
+
+          {/* ── Shareable Market Card ── */}
+          <motion.div {...fadeUp(0.15)}
+            style={{
+              background: "linear-gradient(145deg, #111827 0%, #1e293b 100%)",
+              borderRadius: 24, padding: "32px 28px", color: "#fff",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset",
+              position: "relative", overflow: "hidden",
+            }}>
+            {/* Decorative gradient blob */}
+            <div style={{ position: "absolute", top: -60, right: -60, width: 180, height: 180, borderRadius: "50%", background: `radial-gradient(circle, ${catColor}40, transparent)`, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: -40, left: -40, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.2), transparent)", pointerEvents: "none" }} />
+
+            {/* Top row: WAGR branding + category */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #7C3AED, #9B5CFF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800 }}>W</div>
+                <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.08em", opacity: 0.7 }}>WAGR</span>
+              </div>
+              <span style={{ fontSize: 10, fontFamily: "monospace", padding: "4px 12px", borderRadius: 99, background: `${catColor}30`, border: `1px solid ${catColor}50`, color: catColor, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                {category}
+              </span>
+            </div>
+
+            {/* Question */}
+            <h2 style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.35, margin: "0 0 24px", fontFamily: "var(--font-space-grotesk,sans-serif)", position: "relative" }}>
+              {question.trim()}
+            </h2>
+
+            {/* Stats row */}
+            <div style={{ display: "flex", gap: 12, marginBottom: 20, position: "relative" }}>
+              <div style={{ flex: 1, padding: "14px 16px", background: "rgba(255,255,255,0.06)", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>Pool</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#34d399" }}>${seedAmt}</div>
+              </div>
+              <div style={{ flex: 1, padding: "14px 16px", background: "rgba(22,163,74,0.12)", borderRadius: 14, border: "1px solid rgba(22,163,74,0.2)" }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>YES</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#16a34a" }}>50%</div>
+              </div>
+              <div style={{ flex: 1, padding: "14px 16px", background: "rgba(248,113,113,0.12)", borderRadius: 14, border: "1px solid rgba(248,113,113,0.2)" }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>NO</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#f87171" }}>50%</div>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
+              <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>wagr.xyz</span>
+              <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>Powered by Base</span>
+            </div>
+          </motion.div>
+
+          {/* ── Share Buttons ── */}
+          <motion.div {...fadeUp(0.25)} style={{ display: "flex", gap: 10 }}>
+            {/* Share on X */}
+            <a href={twitterUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, textDecoration: "none" }}>
+              <button style={{
+                width: "100%", padding: "14px 0", borderRadius: 14, fontWeight: 700, fontSize: 14,
+                background: "#111827", color: "#fff", border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.1)", transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.1)"; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                Share on X
+              </button>
             </a>
-          )}
 
-          <div style={{ marginBottom: 28 }}>
+            {/* Share on Telegram */}
+            <a href={telegramUrl} target="_blank" rel="noopener noreferrer" style={{ flex: 1, textDecoration: "none" }}>
+              <button style={{
+                width: "100%", padding: "14px 0", borderRadius: 14, fontWeight: 700, fontSize: 14,
+                background: "#0088cc", color: "#fff", border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "0 4px 16px rgba(0,136,204,0.2)", transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,136,204,0.3)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,136,204,0.2)"; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                Telegram
+              </button>
+            </a>
+          </motion.div>
+
+          {/* Copy Link */}
+          <motion.div {...fadeUp(0.3)}>
             <button onClick={() => {
-              navigator.clipboard.writeText(`${window.location.origin}/markets/${createdMarketId ?? ""}`);
-              alert("Share Link Copied! Send it to your friends to get bets on your market.");
+              navigator.clipboard.writeText(shareUrl);
+              const btn = document.getElementById("copy-btn");
+              if (btn) { btn.textContent = "✅ Copied!"; setTimeout(() => btn.textContent = "🔗 Copy Market Link", 2000); }
             }}
-              style={{ padding: "10px 20px", borderRadius: 99, fontWeight: 700, fontSize: 13, color: "#16a34a", background: "rgba(22,163,74,0.1)", border: "1px solid rgba(22,163,74,0.3)", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6, transition: "all 0.2s" }}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(22,163,74,0.15)"}
-              onMouseLeave={e => e.currentTarget.style.background = "rgba(22,163,74,0.1)"}
+              id="copy-btn"
+              style={{
+                width: "100%", padding: "14px 0", borderRadius: 14, fontWeight: 700, fontSize: 14,
+                background: "#f9fafb", color: "#4b5563", border: "1px solid #e5e7eb", cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "#f3f4f6"}
+              onMouseLeave={e => e.currentTarget.style.background = "#f9fafb"}
             >
-              <LinkIcon size={14} /> Copy Share Link
+              🔗 Copy Market Link
             </button>
-          </div>
+          </motion.div>
 
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/">
+          {/* Bottom links */}
+          <motion.div {...fadeUp(0.35)} style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            <Link href={`/markets/${createdMarketId ?? ""}`}>
               <button style={{ padding: "11px 24px", borderRadius: 12, fontWeight: 700, fontSize: 13, color: "#fff", background: "linear-gradient(135deg,#7C3AED,#9B5CFF)", border: "none", cursor: "pointer", boxShadow: "0 4px 12px rgba(124,58,237,0.2)" }}>
-                View Markets
+                View Market
               </button>
             </Link>
             <button onClick={() => { setStep("form"); setQuestion(""); setSeedAmt(5); }}
-              style={{ padding: "11px 24px", borderRadius: 12, fontWeight: 700, fontSize: 13, color: "#4b5563", background: "#f9fafb", border: "1px solid #e5e7eb", cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              style={{ padding: "11px 24px", borderRadius: 12, fontWeight: 700, fontSize: 13, color: "#4b5563", background: "#ffffff", border: "1px solid #e5e7eb", cursor: "pointer" }}>
               Create Another
             </button>
-          </div>
+          </motion.div>
+
+          {txHash && (
+            <motion.div {...fadeUp(0.4)} style={{ textAlign: "center" }}>
+              <a href={`https://sepolia.basescan.org/tx/${txHash}`} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 11, fontFamily: "monospace", color: "#9ca3af", textDecoration: "underline" }}>
+                View on BaseScan ↗
+              </a>
+            </motion.div>
+          )}
         </motion.div>
       </main>
     );
