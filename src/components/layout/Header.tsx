@@ -156,6 +156,7 @@ export default function Header() {
               client={client}
               chain={activeChain}
               wallets={wallets}
+              theme="light"
               connectButton={{
                 label: "Connect",
                 style: {
