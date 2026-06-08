@@ -30,10 +30,10 @@ interface MarketData {
 
 // ─── Constants ───────────────────────────────────────────────────
 const TABS = [
-  { id: "new",      label: "🆕 New",         icon: Zap },
-  { id: "trending", label: "🔥 Trending",    icon: Flame },
-  { id: "highpool", label: "💰 High Pool",   icon: TrendingUp },
-  { id: "ending",   label: "⏰ Ending Soon", icon: Clock },
+  { id: "new",      label: "New",         icon: Zap },
+  { id: "trending", label: "Trending",    icon: Flame },
+  { id: "highpool", label: "High Pool",   icon: TrendingUp },
+  { id: "ending",   label: "Ending Soon", icon: Clock },
 ] as const;
 
 const CATEGORIES = ["All", "Crypto", "Politics", "Sports", "Tech", "Macro", "Entertainment", "Science", "Others"];
@@ -316,20 +316,27 @@ export default function MarketsPage() {
 
         {/* ── Tabs ── */}
         <div style={{
-          display: "flex", gap: 4, marginBottom: 28, padding: "4px", borderRadius: 14,
-          background: "#f9fafb", border: "1px solid #e5e7eb", width: "fit-content",
+          display: "flex", gap: 0, marginBottom: 28,
+          borderBottom: "2px solid #f3f4f6", width: "100%",
         }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id as any)} style={{
-              padding: "9px 18px", borderRadius: 10, fontSize: 12, fontWeight: 700,
-              fontFamily: "monospace", cursor: "pointer", transition: "all 0.2s", border: "none",
-              background: tab === t.id ? "#ffffff" : "transparent",
-              color:      tab === t.id ? "#7C3AED" : "#9ca3af",
-              boxShadow:  tab === t.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-            }}>
-              {t.label}
-            </button>
-          ))}
+          {TABS.map(t => {
+            const active = tab === t.id;
+            const Icon = t.icon;
+            return (
+              <button key={t.id} onClick={() => setTab(t.id as any)} style={{
+                padding: "12px 20px", fontSize: 13, fontWeight: active ? 700 : 500,
+                fontFamily: "var(--font-space-grotesk,sans-serif)", cursor: "pointer",
+                transition: "all 0.2s", border: "none", background: "transparent",
+                color: active ? "#7C3AED" : "#9ca3af",
+                borderBottom: active ? "2px solid #7C3AED" : "2px solid transparent",
+                marginBottom: -2,
+                display: "flex", alignItems: "center", gap: 6,
+              }}>
+                <Icon size={14} />
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── Grid ── */}
