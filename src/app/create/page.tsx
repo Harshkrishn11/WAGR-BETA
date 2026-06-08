@@ -90,6 +90,16 @@ export default function CreateMarketPage() {
   async function handleCreate() {
     if (!account) { setErrorMsg("Please connect your wallet first."); setStep("error"); return; }
     if (!question.trim()) { setErrorMsg("Please enter a market question."); setStep("error"); return; }
+    
+    // Ensure it's a binary YES/NO question
+    const qLower = question.trim().toLowerCase();
+    const startsWithValidWord = /^(will|is|are|does|do|did|can|could|would|should|has|have)\b/.test(qLower);
+    if (!startsWithValidWord) {
+      setErrorMsg("Questions must be phrased as a YES/NO question (e.g., 'Will...', 'Is...', 'Does...').");
+      setStep("error");
+      return;
+    }
+
     if (seedAmt < MIN_SEED_USDC) { setErrorMsg(`Minimum seed is $${MIN_SEED_USDC} USDC.`); setStep("error"); return; }
 
     const deadline   = Math.floor(Date.now() / 1000) + daysOpen * 86400;

@@ -52,6 +52,7 @@ function MarketCard({ marketId, index }: { marketId: number; index: number }) {
 
   const { question, category, deadline: endTime, status, totalPool } = data as any;
   if (Number(status) === 3) return null;
+  if (!/^(will|is|are|does|do|did|can|could|would|should|has|have)\b/i.test(question.trim())) return null;
 
   const yes = Number(yesPool ?? 0n), no = Number(noPool ?? 0n), sum = yes + no;
   const yP = sum > 0 ? Math.round((yes / sum) * 100) : 50;

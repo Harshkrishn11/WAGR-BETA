@@ -228,6 +228,7 @@ export default function MarketsPage() {
 
   const markets = useMemo(() => {
     let list = rawMarkets.filter(m => m.status !== 3);
+    list = list.filter(m => /^(will|is|are|does|do|did|can|could|would|should|has|have)\b/i.test(m.question.trim()));
     if (category !== "All") list = list.filter(m => m.category === category);
     if (search.trim())      list = list.filter(m => m.question.toLowerCase().includes(search.toLowerCase()));
     switch (tab) {
