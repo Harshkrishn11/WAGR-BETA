@@ -519,13 +519,21 @@ export default function AdminPage() {
       } else if (type === "finalize") {
         tx = prepareContractCall({ contract, method: "finalizeResolution", params: [BigInt(marketId)] });
       } else if (type === "invalidate_penalty") {
-        // _keepCreatorSeed=true → PENALIZE: seed goes to treasury
+        // PENALIZE: _keepCreatorSeed=true → seed goes to treasury
         console.log(`[ADMIN] Invalidating M${marketId} WITH penalty (_keepCreatorSeed=true)`);
-        tx = prepareContractCall({ contract, method: "invalidateMarket", params: [BigInt(marketId), true] });
+        tx = prepareContractCall({
+          contract,
+          method: "function invalidateMarket(uint256 _marketId, bool _keepCreatorSeed)" as any,
+          params: [BigInt(marketId), true],
+        });
       } else if (type === "invalidate_goodfaith") {
-        // _keepCreatorSeed=false → REFUND: creator keeps seed
+        // REFUND: _keepCreatorSeed=false → creator keeps seed
         console.log(`[ADMIN] Invalidating M${marketId} WITHOUT penalty (_keepCreatorSeed=false)`);
-        tx = prepareContractCall({ contract, method: "invalidateMarket", params: [BigInt(marketId), false] });
+        tx = prepareContractCall({
+          contract,
+          method: "function invalidateMarket(uint256 _marketId, bool _keepCreatorSeed)" as any,
+          params: [BigInt(marketId), false],
+        });
       }
       await new Promise<void>((res, rej) => {
         let txHash: `0x${string}` = "0x";
