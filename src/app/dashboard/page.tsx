@@ -7,7 +7,7 @@ import { getContract, readContract, prepareContractCall, waitForReceipt } from "
 import { client } from "@/lib/thirdweb";
 import { activeChain, PREDICTION_MARKET_ADDRESS, FRIEND_BET_ADDRESS, getFriendBetContract } from "@/lib/contracts";
 import PREDICTION_MARKET_ABI from "@/lib/WagrPredictionMarket.json";
-import { Activity, Gift, Clock, AlertTriangle, ArrowRightCircle, Users, CheckCircle, XCircle } from "lucide-react";
+import { Activity, Gift, Clock, AlertTriangle, ArrowRightCircle, Users, CheckCircle, XCircle, Zap, Sparkles, Trophy, ThumbsDown, Swords, History } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { formatUSDC, shortenAddress } from "@/lib/utils";
@@ -292,26 +292,38 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingBottom: 12, borderBottom: "1px solid #e5e7eb" }}>
+              <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #f3f4f6", overflowX: "auto", scrollbarWidth: "none" }}>
                 {[
-                  { id: "resolve",   label: "⚡ Resolve", count: needsResolution.length },
-                  { id: "claimable", label: "🎁 Action Required", count: claimableBets.length },
-                  { id: "active",    label: "⏱️ Active", count: activeMarkets.length },
-                  { id: "created",   label: "✨ Created", count: createdMarkets.length },
-                  { id: "won",       label: "✅ Won & Refunded", count: wonBets.length + refundedBets.length },
-                  { id: "lost",      label: "❌ Lost", count: lostBets.length },
-                ].map(tab => (
-                  <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
-                    style={{
-                      padding: "10px 16px", borderRadius: 12, fontSize: 13, fontWeight: 700, fontFamily: "monospace", whiteSpace: "nowrap", cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 8,
-                      background: activeTab === tab.id ? "rgba(124,58,237,0.1)" : "#f9fafb",
-                      border: activeTab === tab.id ? "1px solid rgba(124,58,237,0.3)" : "1px solid #e5e7eb",
-                      color: activeTab === tab.id ? "#7C3AED" : "#6b7280"
-                    }}>
-                    {tab.label}
-                    <span style={{ padding: "2px 6px", borderRadius: 6, fontSize: 10, background: activeTab === tab.id ? "rgba(124,58,237,0.15)" : "#e5e7eb", color: activeTab === tab.id ? "#7C3AED" : "#6b7280" }}>{tab.count}</span>
-                  </button>
-                ))}
+                  { id: "resolve",   label: "Resolve", count: needsResolution.length, icon: Zap },
+                  { id: "claimable", label: "Action Required", count: claimableBets.length, icon: Gift },
+                  { id: "active",    label: "Active", count: activeMarkets.length, icon: Clock },
+                  { id: "created",   label: "Created", count: createdMarkets.length, icon: Sparkles },
+                  { id: "won",       label: "Won & Refunded", count: wonBets.length + refundedBets.length, icon: Trophy },
+                  { id: "lost",      label: "Lost", count: lostBets.length, icon: ThumbsDown },
+                ].map(tab => {
+                  const active = activeTab === tab.id;
+                  const Icon = tab.icon;
+                  return (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
+                      style={{
+                        padding: "12px 16px", fontSize: 13, fontWeight: active ? 700 : 500,
+                        fontFamily: "var(--font-space-grotesk,sans-serif)", whiteSpace: "nowrap", cursor: "pointer",
+                        transition: "all 0.2s", border: "none", background: "transparent",
+                        color: active ? "#7C3AED" : "#9ca3af",
+                        borderBottom: active ? "2px solid #7C3AED" : "2px solid transparent",
+                        marginBottom: -2,
+                        display: "flex", alignItems: "center", gap: 6,
+                      }}>
+                      <Icon size={14} />
+                      {tab.label}
+                      <span style={{
+                        padding: "1px 6px", borderRadius: 6, fontSize: 10, fontWeight: 700,
+                        background: active ? "rgba(124,58,237,0.12)" : "#f3f4f6",
+                        color: active ? "#7C3AED" : "#9ca3af",
+                      }}>{tab.count}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
@@ -423,23 +435,35 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, borderBottom: "1px solid #e5e7eb", scrollbarWidth: "none" }}>
+              <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #f3f4f6", overflowX: "auto", scrollbarWidth: "none" }}>
                 {[
-                  { id: "active",  label: "⚔️ Active", count: activeFriends.length },
-                  { id: "open",    label: "⏳ Open (Waiting)", count: openFriends.length },
-                  { id: "history", label: "📚 History", count: historyFriends.length },
-                ].map(tab => (
-                  <button key={tab.id} onClick={() => setActiveFriendTab(tab.id as any)}
-                    style={{
-                      padding: "10px 16px", borderRadius: 12, fontSize: 13, fontWeight: 700, fontFamily: "monospace", whiteSpace: "nowrap", cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 8,
-                      background: activeFriendTab === tab.id ? "rgba(124,58,237,0.1)" : "#f9fafb",
-                      border: activeFriendTab === tab.id ? "1px solid rgba(124,58,237,0.3)" : "1px solid #e5e7eb",
-                      color: activeFriendTab === tab.id ? "#7C3AED" : "#6b7280"
-                    }}>
-                    {tab.label}
-                    <span style={{ padding: "2px 6px", borderRadius: 6, fontSize: 10, background: activeFriendTab === tab.id ? "rgba(124,58,237,0.15)" : "#e5e7eb", color: activeFriendTab === tab.id ? "#7C3AED" : "#6b7280" }}>{tab.count}</span>
-                  </button>
-                ))}
+                  { id: "active",  label: "Active", count: activeFriends.length, icon: Swords },
+                  { id: "open",    label: "Open (Waiting)", count: openFriends.length, icon: Clock },
+                  { id: "history", label: "History", count: historyFriends.length, icon: History },
+                ].map(tab => {
+                  const active = activeFriendTab === tab.id;
+                  const Icon = tab.icon;
+                  return (
+                    <button key={tab.id} onClick={() => setActiveFriendTab(tab.id as any)}
+                      style={{
+                        padding: "12px 16px", fontSize: 13, fontWeight: active ? 700 : 500,
+                        fontFamily: "var(--font-space-grotesk,sans-serif)", whiteSpace: "nowrap", cursor: "pointer",
+                        transition: "all 0.2s", border: "none", background: "transparent",
+                        color: active ? "#7C3AED" : "#9ca3af",
+                        borderBottom: active ? "2px solid #7C3AED" : "2px solid transparent",
+                        marginBottom: -2,
+                        display: "flex", alignItems: "center", gap: 6,
+                      }}>
+                      <Icon size={14} />
+                      {tab.label}
+                      <span style={{
+                        padding: "1px 6px", borderRadius: 6, fontSize: 10, fontWeight: 700,
+                        background: active ? "rgba(124,58,237,0.12)" : "#f3f4f6",
+                        color: active ? "#7C3AED" : "#9ca3af",
+                      }}>{tab.count}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
