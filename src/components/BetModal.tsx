@@ -20,8 +20,8 @@ interface BetModalProps {
 const QUICK_AMOUNTS = [5, 10, 25, 50, 100];
 
 const CATCLR: Record<string, string> = {
-  Crypto: "#9B5CFF", Politics: "#f59e0b", Sports: "#22d3ee",
-  Tech: "#00FF88", Macro: "#f472b6", Entertainment: "#fb923c",
+  Crypto: "#9B5CFF", Politics: "#f59e0b", Sports: "#0891B2",
+  Tech: "#059669", Macro: "#DB2777", Entertainment: "#fb923c",
   Science: "#34d399", Others: "#9ca3af",
 };
 
@@ -126,7 +126,7 @@ export default function BetModal({ marketId, question, category, initialSide, on
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
+        style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}
       />
 
       {/* Modal Wrapper */}
@@ -140,62 +140,61 @@ export default function BetModal({ marketId, question, category, initialSide, on
             pointerEvents: "auto",
             width: "min(480px, 100%)",
             maxHeight: "90vh", overflowY: "auto",
-            background: "linear-gradient(160deg, #13131f 0%, #0d0d18 100%)",
-            border: `1px solid ${clr}30`,
+            background: "#ffffff",
+            border: "1px solid #e5e7eb",
             borderRadius: 24,
-            padding: "28px 28px 24px",
-            boxShadow: `0 0 80px ${clr}18, 0 32px 80px rgba(0,0,0,0.6)`,
-            display: "flex", flexDirection: "column", gap: 20,
+            padding: "32px",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
+            display: "flex", flexDirection: "column", gap: 24,
           }}
         >
         {/* Close */}
-        <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "rgba(255,255,255,0.5)" }}>
-          <X size={15} />
+        <button onClick={onClose} style={{ position: "absolute", top: 20, right: 20, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6b7280", transition: "background 0.2s" }} onMouseOver={e => e.currentTarget.style.background = "#e5e7eb"} onMouseOut={e => e.currentTarget.style.background = "#f9fafb"}>
+          <X size={18} />
         </button>
 
         {/* Header */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-            <span style={{ fontSize: 10, fontFamily: "monospace", padding: "3px 10px", borderRadius: 99, background: `${clr}18`, border: `1px solid ${clr}35`, color: clr }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 11, fontFamily: "monospace", padding: "4px 10px", borderRadius: 99, background: `${clr}15`, border: `1px solid ${clr}30`, color: clr, fontWeight: 700 }}>
               {category}
             </span>
-            <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(255,255,255,0.2)" }}>Market #{marketId}</span>
+            <span style={{ fontSize: 11, fontFamily: "monospace", color: "#9ca3af", fontWeight: 600 }}>Market #{marketId}</span>
           </div>
-          <p style={{ fontSize: 15, fontWeight: 700, color: "rgba(255,255,255,0.9)", lineHeight: 1.45, margin: 0 }}>{question}</p>
+          <p style={{ fontSize: 18, fontWeight: 800, color: "#111827", lineHeight: 1.4, margin: 0, fontFamily: "var(--font-space-grotesk,sans-serif)" }}>{question}</p>
         </div>
 
         {/* Live Pool Bar */}
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.3)", marginBottom: 7 }}>
-            <span>YES <strong style={{ color: "#00FF88" }}>{yP}%</strong></span>
-            <span style={{ color: "rgba(255,255,255,0.4)" }}>Pool: <strong style={{ color: "rgba(255,255,255,0.6)" }}>${(yesPool + noPool).toLocaleString("en", { maximumFractionDigits: 2 })}</strong></span>
-            <span>NO <strong style={{ color: "#f87171" }}>{100 - yP}%</strong></span>
+        <div style={{ padding: 20, background: "#f9fafb", borderRadius: 16, border: "1px solid #e5e7eb" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontFamily: "monospace", color: "#6b7280", marginBottom: 10, fontWeight: 600 }}>
+            <span>YES <strong style={{ color: "#16a34a" }}>{yP}%</strong></span>
+            <span>Pool: <strong style={{ color: "#111827" }}>${(yesPool + noPool).toLocaleString("en", { maximumFractionDigits: 2 })}</strong></span>
+            <span>NO <strong style={{ color: "#DC2626" }}>{100 - yP}%</strong></span>
           </div>
-          <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 99, overflow: "hidden", display: "flex" }}>
-            <div style={{ width: `${yP}%`, background: "linear-gradient(90deg,#00FF88,#34d399)", transition: "width 0.5s" }} />
+          <div style={{ height: 8, background: "#e5e7eb", borderRadius: 99, overflow: "hidden", display: "flex" }}>
+            <div style={{ width: `${yP}%`, background: "linear-gradient(90deg,#16a34a,#34d399)", transition: "width 0.5s" }} />
             <div style={{ width: `${100 - yP}%`, background: "linear-gradient(90deg,#f87171,#ef4444)", transition: "width 0.5s" }} />
           </div>
         </div>
 
         {/* Side Selector */}
         <div>
-          <p style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.3)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>Your Prediction</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <p style={{ fontSize: 12, fontFamily: "monospace", color: "#6b7280", marginBottom: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Your Prediction</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             {([0, 1] as const).map(s => (
               <button key={s} onClick={() => setSide(s)} style={{
-                padding: "14px 0", borderRadius: 14, fontSize: 14, fontWeight: 800,
-                fontFamily: "monospace", cursor: "pointer", transition: "all 0.18s",
+                padding: "16px 0", borderRadius: 16, fontSize: 15, fontWeight: 800,
+                fontFamily: "monospace", cursor: "pointer", transition: "all 0.2s",
                 background: side === s
-                  ? (s === 0 ? "rgba(0,255,136,0.15)" : "rgba(248,113,113,0.15)")
-                  : "rgba(255,255,255,0.03)",
+                  ? (s === 0 ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.1)")
+                  : "#ffffff",
                 border: side === s
-                  ? (s === 0 ? "1px solid rgba(0,255,136,0.5)" : "1px solid rgba(248,113,113,0.5)")
-                  : "1px solid rgba(255,255,255,0.08)",
-                color: side === s ? (s === 0 ? "#00FF88" : "#f87171") : "rgba(255,255,255,0.3)",
-                boxShadow: side === s ? (s === 0 ? "0 0 20px rgba(0,255,136,0.12)" : "0 0 20px rgba(248,113,113,0.12)") : "none",
+                  ? (s === 0 ? "2px solid #16a34a" : "2px solid #DC2626")
+                  : "1px solid #e5e7eb",
+                color: side === s ? (s === 0 ? "#16a34a" : "#DC2626") : "#9ca3af",
               }}>
                 {s === 0 ? "✅ YES" : "❌ NO"}
-                <div style={{ fontSize: 10, fontWeight: 400, marginTop: 3, opacity: 0.7 }}>{s === 0 ? yP : 100 - yP}% chance</div>
+                <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4, opacity: side === s ? 0.9 : 0.6 }}>{s === 0 ? yP : 100 - yP}% chance</div>
               </button>
             ))}
           </div>
@@ -203,26 +202,27 @@ export default function BetModal({ marketId, question, category, initialSide, on
 
         {/* Amount */}
         <div>
-          <p style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,255,255,0.3)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>Bet Amount (USDC)</p>
-          <div style={{ position: "relative", marginBottom: 10 }}>
-            <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", pointerEvents: "none" }}>$</span>
+          <p style={{ fontSize: 12, fontFamily: "monospace", color: "#6b7280", marginBottom: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>Bet Amount (USDC)</p>
+          <div style={{ position: "relative", marginBottom: 12 }}>
+            <span style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#9ca3af", fontFamily: "monospace", pointerEvents: "none", fontWeight: 700 }}>$</span>
             <input
               type="number" min={1} value={inputStr}
               onChange={e => { setInputStr(e.target.value); setAmount(Number(e.target.value) || 0); }}
-              onFocus={e => e.target.style.borderColor = `${clr}60`}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
-              style={{ width: "100%", padding: "13px 16px 13px 32px", borderRadius: 12, fontSize: 16, fontWeight: 700,
-                fontFamily: "monospace", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
-                color: "#fff", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+              onFocus={e => e.target.style.borderColor = clr}
+              onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+              style={{ width: "100%", padding: "16px 16px 16px 40px", borderRadius: 16, fontSize: 18, fontWeight: 800,
+                fontFamily: "monospace", background: "#f9fafb", border: "1px solid #e5e7eb",
+                color: "#111827", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
             />
           </div>
-          <div style={{ display: "flex", gap: 6 }}>
+          <div style={{ display: "flex", gap: 8 }}>
             {QUICK_AMOUNTS.map(v => (
               <button key={v} onClick={() => { setAmount(v); setInputStr(String(v)); }}
-                style={{ flex: 1, padding: "7px 0", borderRadius: 8, fontSize: 11, fontFamily: "monospace", cursor: "pointer", transition: "all 0.15s",
-                  background: amount === v ? `${clr}18` : "rgba(255,255,255,0.03)",
-                  border:     amount === v ? `1px solid ${clr}45` : "1px solid rgba(255,255,255,0.07)",
-                  color:      amount === v ? clr : "rgba(255,255,255,0.35)",
+                style={{ flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 13, fontFamily: "monospace", cursor: "pointer", transition: "all 0.15s",
+                  background: amount === v ? `${clr}15` : "#ffffff",
+                  border:     amount === v ? `1px solid ${clr}50` : "1px solid #e5e7eb",
+                  color:      amount === v ? clr : "#6b7280",
+                  fontWeight: amount === v ? 700 : 500
                 }}>
                 ${v}
               </button>
@@ -231,31 +231,31 @@ export default function BetModal({ marketId, question, category, initialSide, on
         </div>
 
         {/* Payout Preview */}
-        <div style={{ padding: "12px 16px", borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <TrendingUp size={13} color={clr} />
-            <span style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.4)" }}>Est. Payout if you win</span>
+        <div style={{ padding: "16px 20px", borderRadius: 16, background: "#f9fafb", border: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <TrendingUp size={16} color={clr} />
+            <span style={{ fontSize: 13, fontFamily: "monospace", color: "#6b7280", fontWeight: 600 }}>Est. Payout if you win</span>
           </div>
           <div style={{ textAlign: "right" }}>
-            <span style={{ fontSize: 16, fontWeight: 800, fontFamily: "monospace", color: clr }}>${payout.toFixed(2)}</span>
-            <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(255,255,255,0.25)", marginLeft: 6 }}>{multiplier}x</span>
+            <span style={{ fontSize: 18, fontWeight: 800, fontFamily: "monospace", color: clr }}>${payout.toFixed(2)}</span>
+            <span style={{ fontSize: 11, fontFamily: "monospace", color: "#9ca3af", marginLeft: 8, fontWeight: 600 }}>{multiplier}x</span>
           </div>
         </div>
 
         {/* Error */}
         {step === "error" && (
-          <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)", fontSize: 12, color: "#f87171", lineHeight: 1.5 }}>
+          <div style={{ padding: "12px 16px", borderRadius: 12, background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.2)", fontSize: 13, color: "#DC2626", lineHeight: 1.5, fontWeight: 600 }}>
             {errMsg}
           </div>
         )}
 
         {/* Success */}
         {step === "done" ? (
-          <div style={{ textAlign: "center", padding: "16px 0" }}>
-            <div style={{ fontSize: 40, marginBottom: 8 }}>🎉</div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: "#00FF88", margin: "0 0 4px" }}>Bet Placed!</p>
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", margin: "0 0 16px", fontFamily: "monospace" }}>You bet ${amount} on {side === 0 ? "YES" : "NO"}</p>
-            <button onClick={onClose} style={{ padding: "11px 28px", borderRadius: 12, fontWeight: 700, fontSize: 13, color: "#fff", background: "linear-gradient(135deg,#7C3AED,#9B5CFF)", border: "none", cursor: "pointer" }}>
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+            <p style={{ fontSize: 18, fontWeight: 800, color: "#16a34a", margin: "0 0 8px" }}>Bet Placed!</p>
+            <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 24px", fontFamily: "monospace" }}>You bet <strong style={{ color: "#111827" }}>${amount}</strong> on <strong style={{ color: side === 0 ? "#16a34a" : "#DC2626" }}>{side === 0 ? "YES" : "NO"}</strong></p>
+            <button onClick={onClose} style={{ padding: "14px 32px", borderRadius: 14, fontWeight: 800, fontSize: 15, color: "#fff", background: "#111827", border: "none", cursor: "pointer", width: "100%" }}>
               Close
             </button>
           </div>
@@ -264,15 +264,14 @@ export default function BetModal({ marketId, question, category, initialSide, on
             onClick={handleBet}
             disabled={isLoading || !account || amount < 1}
             style={{
-              padding: "15px", borderRadius: 14, fontWeight: 800, fontSize: 15, letterSpacing: "0.04em",
+              padding: "18px", borderRadius: 16, fontWeight: 800, fontSize: 16, letterSpacing: "0.02em",
               color: "#fff", border: "none", cursor: isLoading || !account || amount < 1 ? "not-allowed" : "pointer",
-              background: isLoading ? "rgba(124,58,237,0.4)" : `linear-gradient(135deg, ${side === 0 ? "#059669, #00FF88" : "#dc2626, #f87171"})`,
-              boxShadow: isLoading ? "none" : `0 0 32px ${side === 0 ? "rgba(0,255,136,0.3)" : "rgba(248,113,113,0.3)"}`,
-              opacity: !account || amount < 1 ? 0.6 : 1,
-              transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              background: (!account || amount < 1) ? "#e5e7eb" : isLoading ? "rgba(124,58,237,0.5)" : `linear-gradient(135deg, ${side === 0 ? "#16a34a, #22c55e" : "#DC2626, #ef4444"})`,
+              boxShadow: (!account || amount < 1 || isLoading) ? "none" : `0 8px 24px ${side === 0 ? "rgba(22,163,74,0.3)" : "rgba(220,38,38,0.3)"}`,
+              transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
             }}
           >
-            <Zap size={16} fill="white" />
+            <Zap size={18} fill={(!account || amount < 1) ? "#9ca3af" : "white"} color={(!account || amount < 1) ? "#9ca3af" : "white"} />
             {!account         ? "Connect Wallet First"
             : step === "approving" ? "⏳ Approving USDC..."
             : step === "betting"   ? "⏳ Placing Bet..."
@@ -281,7 +280,7 @@ export default function BetModal({ marketId, question, category, initialSide, on
         )}
 
         {!account && (
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", textAlign: "center", fontFamily: "monospace", margin: 0 }}>
+          <p style={{ fontSize: 12, color: "#9ca3af", textAlign: "center", fontFamily: "monospace", margin: 0 }}>
             Connect wallet via the header to place bets
           </p>
         )}
