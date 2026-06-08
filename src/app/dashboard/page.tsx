@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
-import { getContract, readContract, prepareContractCall } from "thirdweb";
+import { getContract, readContract, prepareContractCall, waitForReceipt } from "thirdweb";
 import { client } from "@/lib/thirdweb";
 import { activeChain, PREDICTION_MARKET_ADDRESS, FRIEND_BET_ADDRESS, getFriendBetContract } from "@/lib/contracts";
 import PREDICTION_MARKET_ABI from "@/lib/WagrPredictionMarket.json";
@@ -78,8 +78,8 @@ export default function DashboardPage() {
           const isCreator = marketData.creator.toLowerCase() === account!.address.toLowerCase();
 
           const [yesAmt, noAmt, claimed, refunded] = await Promise.all([
-            readContract({ contract: localContract, method: "userWagers", params: [BigInt(i), account!.address, 0] }),
-            readContract({ contract: localContract, method: "userWagers", params: [BigInt(i), account!.address, 1] }),
+            readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 0] }),
+            readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 1] }),
             readContract({ contract: localContract, method: "hasClaimed", params: [BigInt(i), account!.address] }),
             readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), account!.address] }),
           ]);
@@ -144,8 +144,14 @@ export default function DashboardPage() {
     try {
       const method = isRefund ? "claimRefund" : "claimWinnings";
       const tx = prepareContractCall({ contract, method, params: [BigInt(marketId)] });
-      await new Promise<void>((res, rej) => sendTx(tx, { onSuccess: () => res(), onError: (e) => rej(e) }));
+      let txHash: `0x${string}` = "0x";
+      await new Promise<void>((res, rej) => sendTx(tx, { onSuccess: (result: any) => { txHash = result?.transactionHash ?? "0x"; res(); }, onError: (e) => rej(e) }));
       
+      // Wait for confirmation
+      if (txHash && txHash !== "0x") {
+        await waitForReceipt({ client, chain: activeChain, transactionHash: txHash });
+      }
+
       setBets(prev => prev.map(b => {
         if (b.marketId === marketId) {
           return { ...b, hasClaimed: !isRefund ? true : b.hasClaimed, hasRefunded: isRefund ? true : b.hasRefunded };
@@ -165,7 +171,13 @@ export default function DashboardPage() {
     setResolveLoading(marketId);
     try {
       const tx = prepareContractCall({ contract, method: "creatorResolveMarket", params: [BigInt(marketId), correctOption] });
-      await new Promise<void>((res, rej) => sendTx(tx, { onSuccess: () => res(), onError: (e) => rej(e) }));
+      let txHash: `0x${string}` = "0x";
+      await new Promise<void>((res, rej) => sendTx(tx, { onSuccess: (result: any) => { txHash = result?.transactionHash ?? "0x"; res(); }, onError: (e) => rej(e) }));
+
+      // Wait for confirmation
+      if (txHash && txHash !== "0x") {
+        await waitForReceipt({ client, chain: activeChain, transactionHash: txHash });
+      }
 
       setBets(prev => prev.map(b => {
         if (b.marketId === marketId) return { ...b, status: 1, correctOptionIndex: correctOption };

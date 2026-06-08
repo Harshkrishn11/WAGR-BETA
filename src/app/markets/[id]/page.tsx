@@ -92,26 +92,39 @@ export default function SingleMarketPage({ params }: { params: Promise<{ id: str
     const contract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS, abi: PREDICTION_MARKET_ABI as any });
 
     try {
+      // 1. Check current allowance — skip approve if already sufficient
       setBetStep("approving");
-      let approveTxHash: `0x${string}` = "0x";
-      await new Promise<void>((res, rej) => {
-        sendTx(prepareContractCall({ contract: usdcContract, method: "approve", params: [PREDICTION_MARKET_ADDRESS!, amtBig] }),
-          { onSuccess: (result: any) => { approveTxHash = result?.transactionHash ?? "0x"; res(); }, onError: (e) => rej(e) });
-      });
+      const currentAllowance = await readContract({
+        contract: usdcContract,
+        method: "allowance",
+        params: [account.address, PREDICTION_MARKET_ADDRESS!],
+      }) as bigint;
 
-      // Wait for the approve tx to actually be MINED before placing the bet
-      if (approveTxHash && approveTxHash !== "0x") {
-        await waitForReceipt({ client, chain: activeChain, transactionHash: approveTxHash });
-      } else {
-        // Fallback: safe 6s wait if hash was not captured
-        await new Promise(r => setTimeout(r, 6000));
+      if (currentAllowance < amtBig) {
+        let approveTxHash: `0x${string}` = "0x";
+        await new Promise<void>((res, rej) => {
+          sendTx(prepareContractCall({ contract: usdcContract, method: "approve", params: [PREDICTION_MARKET_ADDRESS!, amtBig] }),
+            { onSuccess: (result: any) => { approveTxHash = result?.transactionHash ?? "0x"; res(); }, onError: (e) => rej(e) });
+        });
+
+        if (approveTxHash && approveTxHash !== "0x") {
+          await waitForReceipt({ client, chain: activeChain, transactionHash: approveTxHash });
+        } else {
+          await new Promise(r => setTimeout(r, 6000));
+        }
       }
 
+      // 2. Place the bet
       setBetStep("betting");
+      let betTxHash: `0x${string}` = "0x";
       await new Promise<void>((res, rej) => {
         sendTx(prepareContractCall({ contract, method: "placeBet", params: [BigInt(marketId), side, amtBig] }),
-          { onSuccess: () => res(), onError: (e) => rej(e) });
+          { onSuccess: (result: any) => { betTxHash = result?.transactionHash ?? "0x"; res(); }, onError: (e) => rej(e) });
       });
+
+      if (betTxHash && betTxHash !== "0x") {
+        await waitForReceipt({ client, chain: activeChain, transactionHash: betTxHash });
+      }
 
       setBetStep("done");
       fetchMarket();

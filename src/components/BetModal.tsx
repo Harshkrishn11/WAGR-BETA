@@ -93,7 +93,7 @@ export default function BetModal({ marketId, question, category, initialSide, on
         if (approveTxHash && approveTxHash !== "0x") {
           await waitForReceipt({ client, chain: activeChain, transactionHash: approveTxHash });
         } else {
-          await new Promise(resolve => setTimeout(resolve, 4000));
+          await new Promise(resolve => setTimeout(resolve, 6000));
         }
       }
 

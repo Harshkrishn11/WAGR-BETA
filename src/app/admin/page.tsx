@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReadContract, useSendTransaction, useActiveAccount, ConnectButton } from "thirdweb/react";
-import { getContract, prepareContractCall, readContract } from "thirdweb";
+import { getContract, prepareContractCall, readContract, waitForReceipt } from "thirdweb";
 import { client } from "@/lib/thirdweb";
 import { activeChain, PREDICTION_MARKET_ADDRESS } from "@/lib/contracts";
 import PREDICTION_MARKET_ABI from "@/lib/WagrPredictionMarket.json";
@@ -329,7 +329,25 @@ export default function AdminPage() {
       } else if (type === "invalidate_goodfaith") {
         tx = prepareContractCall({ contract, method: "invalidateMarket", params: [BigInt(marketId), false] });
       }
-      await new Promise<void>((res, rej) => sendTx(tx, { onSuccess: () => { setTxMsg("✅ Done! Refresh to see updated status."); res(); }, onError: (e) => rej(e) }));
+      await new Promise<void>((res, rej) => {
+        let txHash: `0x${string}` = "0x";
+        sendTx(tx, {
+          onSuccess: async (result: any) => {
+            txHash = result?.transactionHash ?? "0x";
+            try {
+              if (txHash && txHash !== "0x") {
+                await waitForReceipt({ client, chain: activeChain, transactionHash: txHash });
+              }
+              setTxMsg("✅ Done! Refresh to see updated status.");
+              res();
+            } catch (e) {
+              setTxMsg("✅ Tx sent! Waiting for confirmation...");
+              res();
+            }
+          },
+          onError: (e) => rej(e),
+        });
+      });
     } catch (e: any) {
       setTxMsg(`❌ Error: ${e?.message?.slice(0, 80) ?? "Transaction failed"}`);
     }
