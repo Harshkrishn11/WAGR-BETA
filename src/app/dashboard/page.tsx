@@ -74,26 +74,41 @@ export default function DashboardPage() {
       setLoadingMarkets(true);
       try {
         const localContract = getContract({ client, chain: activeChain, address: PREDICTION_MARKET_ADDRESS!, abi: PREDICTION_MARKET_ABI as any });
+
+        // Step 1: Fetch ALL market data in parallel
+        const marketIds = Array.from({ length: totalMarkets }, (_, i) => totalMarkets - 1 - i);
+        const allMarketData = await Promise.all(
+          marketIds.map(i => readContract({ contract: localContract, method: "getMarket", params: [BigInt(i)] }))
+        );
+
+        // Step 2: Fetch ALL user wagers + claim status in parallel
+        const allUserData = await Promise.all(
+          marketIds.map((i, idx) => {
+            const md = allMarketData[idx] as any;
+            const calls: Promise<any>[] = [
+              readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 0] }),
+              readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 1] }),
+              readContract({ contract: localContract, method: "hasClaimed", params: [BigInt(i), account!.address] }),
+              readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), account!.address] }),
+            ];
+            // For invalidated markets, also check seed penalty
+            if (Number(md.status) === 3) {
+              calls.push(readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), "0x0000000000000000000000000000000000000000"] }).catch(() => false));
+            } else {
+              calls.push(Promise.resolve(false));
+            }
+            return Promise.all(calls);
+          })
+        );
+
+        // Step 3: Assemble results
         const userActivity: UserBet[] = [];
-        for (let i = totalMarkets - 1; i >= 0; i--) {
-          const marketData = await readContract({ contract: localContract, method: "getMarket", params: [BigInt(i)] }) as any;
+        for (let idx = 0; idx < marketIds.length; idx++) {
+          const i = marketIds[idx];
+          const marketData = allMarketData[idx] as any;
+          const [yesAmt, noAmt, claimed, refunded, seedPenalized] = allUserData[idx];
           const isCreator = marketData.creator.toLowerCase() === account!.address.toLowerCase();
 
-          const [yesAmt, noAmt, claimed, refunded] = await Promise.all([
-            readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 0] }),
-            readContract({ contract: localContract, method: "getUserWager", params: [BigInt(i), account!.address, 1] }),
-            readContract({ contract: localContract, method: "hasClaimed", params: [BigInt(i), account!.address] }),
-            readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), account!.address] }),
-          ]);
-
-          // Check if seed was penalized (for invalidated markets)
-          let seedPenalized = false;
-          if (Number(marketData.status) === 3) {
-            try {
-              seedPenalized = await readContract({ contract: localContract, method: "hasRefunded", params: [BigInt(i), "0x0000000000000000000000000000000000000000"] }) as boolean;
-            } catch { seedPenalized = false; }
-          }
-          
           if (yesAmt > 0n || noAmt > 0n || isCreator) {
             userActivity.push({
               marketId: i,
@@ -108,7 +123,7 @@ export default function DashboardPage() {
               hasRefunded: refunded as boolean,
               isCreator,
               creatorSeedAmount: marketData.creatorSeedAmount as bigint,
-              seedPenalized,
+              seedPenalized: seedPenalized as boolean,
             });
           }
         }
