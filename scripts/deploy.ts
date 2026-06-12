@@ -56,6 +56,14 @@ async function main() {
   const friendBetAddr = await friendBet.getAddress();
   console.log(`✅ FriendBet: ${friendBetAddr}`);
 
+  // ── Deploy DailyGame ──
+  console.log(`\nDeploying DailyGame...`);
+  const DailyGame     = await ethers.getContractFactory("DailyGame");
+  const dailyGame     = await DailyGame.deploy(usdcAddress, TREASURY, deployer.address);
+  await dailyGame.waitForDeployment();
+  const dailyGameAddr = await dailyGame.getAddress();
+  console.log(`✅ DailyGame: ${dailyGameAddr}`);
+
   // ── Print env vars ──
   console.log(`\n========================================`);
   console.log(`  Deployment Complete!`);
@@ -63,6 +71,7 @@ async function main() {
   console.log(`\nCopy these into your .env.local:\n`);
   console.log(`NEXT_PUBLIC_PREDICTION_MARKET_ADDRESS=${predictionMarketAddr}`);
   console.log(`NEXT_PUBLIC_FRIEND_BET_ADDRESS=${friendBetAddr}`);
+  console.log(`NEXT_PUBLIC_DAILY_GAME_ADDRESS=${dailyGameAddr}`);
   console.log(`\n========================================\n`);
 
   // ── Save deployments/chainId.json ──
@@ -74,6 +83,7 @@ async function main() {
     usdc:      usdcAddress,
     PredictionMarket: predictionMarketAddr,
     FriendBet: friendBetAddr,
+    DailyGame: dailyGameAddr,
     timestamp: new Date().toISOString(),
   };
 

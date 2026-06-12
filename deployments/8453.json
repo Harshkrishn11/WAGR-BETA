@@ -1,0 +1,11 @@
+{
+  "network": "base",
+  "chainId": "8453",
+  "deployer": "0xDdb29d86Be44A19073CB52888d489103Ec4Ac7b9",
+  "treasury": "0x225FF3AacD6328301a35614DC5f5AE173f595294",
+  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "PredictionMarket": "0x02c4a3C195892d21e7E7C7B5F19Bb1745c9Cbbc1",
+  "FriendBet": "0xC99421d3B42fec76C5722b895D7cfC508Ac9b69b",
+  "DailyGame": "0xFc8A75A915b44D6f325af73740C84a300DFAF311",
+  "timestamp": "2026-06-12T11:20:18.946Z"
+}
